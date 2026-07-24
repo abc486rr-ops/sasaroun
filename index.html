@@ -60,7 +60,7 @@
     /* ── Photo strip (edge-to-edge, horizontal scroll) ──────── */
     .photos {
       display: flex; gap: 10px; overflow-x: auto;
-      margin: 0 -24px 32px; padding: 0 24px 6px;
+      margin: 40px -24px 0; padding: 0 24px 6px;
       -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
     .photos::-webkit-scrollbar { display: none; }
@@ -137,9 +137,6 @@
       <div class="brand__shop">Gift Shop</div>
     </header>
 
-    <!-- Photo strip -->
-    <div class="photos" id="photos" aria-label="사사로운"></div>
-
     <!-- Language picker -->
     <section id="picker">
       <p class="pick__title" id="pickTitle">언어를 선택하세요 · Select your language</p>
@@ -157,6 +154,9 @@
       <p class="detail__lead" id="dLead"></p>
       <div class="detail__body" id="dBody"></div>
     </article>
+
+    <!-- Photo strip -->
+    <div class="photos" id="photos" aria-label="사사로운"></div>
 
     <footer class="footer">
       <span>사사로운 · 私思 · Sasaroun</span>
