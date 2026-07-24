@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Claude / internal
+.claude/
+prompt_plan.md
+
+# Original (unoptimized) photos — keep local only, don't publish
+photos/original/

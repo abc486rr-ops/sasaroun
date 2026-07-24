@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F5F1EA" />
+  <title>사사로운 · Sasaroun</title>
+  <meta name="description" content="사사로운 (私思, Sasaroun) — a private & thoughtful gift shop by 빛날현." />
+
+  <style>
+    /* ── Brand palette (from 빛날현 홈페이지 기획안) ───────────── */
+    :root {
+      --paper:  #F5F1EA;   /* 오프화이트 */
+      --gold:   #C9A678;   /* 낡은 금색 */
+      --ink:    #2B2620;   /* 먹색 */
+      --sub:    #8B7E6E;   /* 옅은 갈색 */
+      --line:   #E4DDD1;
+      --card:   #FBF9F4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR",
+                   "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .serif {
+      font-family: "Nanum Myeongjo", "Apple SD Gothic Neo", Georgia,
+                   "Times New Roman", serif;
+    }
+
+    .wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: calc(env(safe-area-inset-top) + 40px) 24px
+               calc(env(safe-area-inset-bottom) + 48px);
+      min-height: 100%;
+    }
+
+    /* ── Brand mark (always visible) ────────────────────────── */
+    .brand { text-align: center; margin-bottom: 30px; }
+    .brand__han   { font-size: 40px; letter-spacing: 0.18em; font-weight: 700; }
+    .brand__hanja { margin-top: 8px; font-size: 20px; letter-spacing: 0.5em; color: var(--gold); }
+    .brand__rule  { width: 44px; height: 1px; background: var(--gold); margin: 18px auto; opacity: 0.7; }
+    .brand__rom   { font-size: 12px; letter-spacing: 0.42em; text-transform: uppercase; color: var(--sub); }
+    .brand__en    { margin-top: 4px; font-size: 13px; font-style: italic; color: var(--sub); }
+    .brand__shop  {
+      display: inline-block; margin-top: 18px; padding: 6px 16px;
+      border: 1px solid var(--gold); border-radius: 999px;
+      font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+    }
+
+    /* ── Photo strip (edge-to-edge, horizontal scroll) ──────── */
+    .photos {
+      display: flex; gap: 10px; overflow-x: auto;
+      margin: 0 -24px 32px; padding: 0 24px 6px;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .photos::-webkit-scrollbar { display: none; }
+    .photo {
+      flex: 0 0 auto; width: 156px; height: 208px; margin: 0;
+      border-radius: 14px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--line);
+    }
+    .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo--empty { display: flex; align-items: center; justify-content: center; border-style: dashed; border-color: var(--gold); }
+    .photo--empty span { font-size: 12px; letter-spacing: 0.1em; color: var(--sub); }
+
+    /* ── Language picker (slim single-column list) ──────────── */
+    .pick__title {
+      text-align: center; font-size: 14px; color: var(--sub);
+      letter-spacing: 0.04em; margin-bottom: 18px;
+    }
+    .langs { display: flex; flex-direction: column; gap: 8px; }
+    .lang {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+      padding: 14px 18px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 11px;
+      cursor: pointer; text-align: left; color: inherit; font: inherit;
+      transition: border-color .15s ease, background .15s ease, transform .08s ease;
+    }
+    .lang:hover { border-color: var(--gold); }
+    .lang:active { transform: scale(.99); }
+    .lang__native { font-size: 16px; font-weight: 600; }
+    .lang__latin  { font-size: 12px; color: var(--sub); letter-spacing: .03em; white-space: nowrap; }
+
+    /* ── Detail view ────────────────────────────────────────── */
+    .detail { display: none; }
+    .detail.on { display: block; animation: fade .35s ease; }
+    #picker.off { display: none; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .back {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: none; border: none; cursor: pointer;
+      color: var(--sub); font: inherit; font-size: 13px;
+      padding: 8px 0; margin-bottom: 16px; letter-spacing: .02em;
+    }
+    .back:hover { color: var(--gold); }
+    .back svg { width: 14px; height: 14px; }
+
+    .detail__title { font-size: 28px; font-weight: 700; letter-spacing: .06em; margin-bottom: 10px; }
+    .detail__lead  { font-size: 17px; color: var(--sub); font-style: italic; margin-bottom: 26px; }
+    .detail__body p { margin-bottom: 18px; font-size: 16px; }
+    .detail__body p:last-child { margin-bottom: 0; }
+
+    .placeholder {
+      margin-top: 8px; padding: 14px 16px;
+      border: 1px dashed var(--gold); border-radius: 12px;
+      background: rgba(201,166,120,.08);
+      font-size: 13px; color: var(--sub);
+    }
+
+    .footer {
+      margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line);
+      text-align: center; font-size: 12px; color: var(--sub); letter-spacing: .02em;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <!-- Brand mark -->
+    <header class="brand">
+      <div class="brand__han serif">사사로운</div>
+      <div class="brand__hanja serif">私思</div>
+      <div class="brand__rule"></div>
+      <div class="brand__rom">Sasaroun</div>
+      <div class="brand__en">private &amp; thoughtful</div>
+      <div class="brand__shop">Gift Shop</div>
+    </header>
+
+    <!-- Photo strip -->
+    <div class="photos" id="photos" aria-label="사사로운"></div>
+
+    <!-- Language picker -->
+    <section id="picker">
+      <p class="pick__title" id="pickTitle">언어를 선택하세요 · Select your language</p>
+      <div class="langs" id="langs"></div>
+    </section>
+
+    <!-- Detail -->
+    <article class="detail" id="detail">
+      <button class="back" id="back" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span id="backLabel">Change language</span>
+      </button>
+      <h1 class="detail__title serif" id="dTitle"></h1>
+      <p class="detail__lead" id="dLead"></p>
+      <div class="detail__body" id="dBody"></div>
+    </article>
+
+    <footer class="footer">
+      <span>사사로운 · 私思 · Sasaroun</span>
+    </footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    /* ══════════════════════════════════════════════════════════════
+       PHOTOS — photos/ 폴더에 이미지를 넣고 아래 파일명만 맞춰주세요.
+       파일이 없으면 자동으로 "사진" 자리표시자가 표시됩니다.
+       ══════════════════════════════════════════════════════════════ */
+    var PHOTOS = ["photos/1.jpg", "photos/2.jpg", "photos/3.jpg"];
+
+    /* ══════════════════════════════════════════════════════════════
+       CONTENT — 여기만 채우면 됩니다.
+       각 언어별 title / lead / body(문단 배열). body 가 비면 자리표시자 표시.
+       언어 추가: LANGS 와 CONTENT 에 항목을 하나씩 더하면 됩니다.
+       ══════════════════════════════════════════════════════════════ */
+    var LANGS = [
+      { code: "ko",      native: "한국어",            latin: "Korean" },
+      { code: "en",      native: "English",           latin: "English" },
+      { code: "ja",      native: "日本語",            latin: "Japanese" },
+      { code: "zh-Hans", native: "简体中文",          latin: "Chinese (Simplified)" },
+      { code: "zh-Hant", native: "繁體中文",          latin: "Chinese (Traditional)" },
+      { code: "th",      native: "ไทย",               latin: "Thai" },
+      { code: "es",      native: "Español",           latin: "Spanish" },
+      { code: "fr",      native: "Français",          latin: "French" },
+      { code: "de",      native: "Deutsch",           latin: "German" },
+      { code: "vi",      native: "Tiếng Việt",        latin: "Vietnamese" },
+      { code: "id",      native: "Bahasa Indonesia",  latin: "Indonesian" },
+      { code: "ru",      native: "Русский",           latin: "Russian" }
+    ];
+
+    var BACK = {
+      "ko": "다른 언어 선택", "en": "Change language", "ja": "言語を変更",
+      "zh-Hans": "更改语言", "zh-Hant": "更改語言", "th": "เปลี่ยนภาษา",
+      "es": "Cambiar idioma", "fr": "Changer de langue", "de": "Sprache ändern",
+      "vi": "Đổi ngôn ngữ", "id": "Ganti bahasa", "ru": "Сменить язык"
+    };
+
+    // 소개 내용. body 는 문단 배열입니다.
+    var CONTENT = {
+      "ko": {
+        title: "사사로운",
+        lead: "사적인 공간을 위한 사려 깊은 물건",
+        body: [
+          "대구 반월당 약령시의 소품샵, 사사로운입니다. 책과 소품, 도자 공예품, 향, 선물 — 사적인 공간을 위한 사려 깊은 물건을 소개합니다.",
+          "사사로운은 단순히 제품을 소개하는 소품샵이 아니라, 고객분들께 삶의 방식을 제안하는 공간이길 바랍니다. 오래도록 함께, 나와 사랑하는 이, 그리고 우리 사회가 함께할 수 있는 방법을 고민합니다. 조금은 더 수고스럽더라도 나와 우리에게, 나아가 사회에도 가치를 더하는 행동을 할 수 있는, 그런 우리가 되기를 바라며 공간을 운영합니다.",
+          "바쁘게만 흘러가는 일상 속에서 잠시나마 차분하고 깊이 있는 시간을 사사로운에서 함께해 보세요. 누군가에게는 차분히 돌아보는 시간을, 누군가에게는 색다른 데이트 코스를, 누군가에게는 소중한 이를 위한 멋진 선물가게가 되어드리겠습니다.",
+          "나를 위한, 그리고 소중한 사람들을 위한 사려 깊은 선물을 고민 중이신가요? 하나하나 의미가 담긴 물건들의 이야기를 들여다보며 사려 깊게 골라보세요. 선물하는 그 마음을 응원하며, 선물 포장은 언제나 무료입니다 :)"
+        ]
+      },
+      "en": {
+        title: "Sasaroun",
+        lead: "Thoughtful things for your private space",
+        body: [
+          "This is Sasaroun, a lifestyle and home-decor shop in Daegu's Banwoldang Yaknyeongsi (Herbal Medicine Market). We introduce books, home decor, ceramic crafts, fragrances, and gifts — thoughtful things chosen for your private space.",
+          "Sasaroun aspires to be more than a shop that simply displays products; we hope to be a space that proposes a way of life. We contemplate how we, our loved ones, and our society can coexist for a long time — and, even when it takes a little more effort, how we can act in ways that add value to ourselves, our community, and society as a whole.",
+          "In the midst of a busy daily life, take a moment of calm, unhurried reflection with us at Sasaroun. For some it becomes a time for quiet reflection, for others a unique date course, and for others a wonderful gift shop for someone dear.",
+          "Are you looking for a thoughtful gift for yourself or the people you love? Look into the story behind each meaningful object and choose with care. We support the heart behind every gift — gift wrapping is always free :)"
+        ]
+      },
+      "ja": {
+        title: "ササロウン",
+        lead: "プライベートな空間のための、思いやりのある品々",
+        body: [
+          "大邱・半月堂の薬令市（韓方薬の市場）にある小物店、ササロウンです。本や小物、陶磁器の工芸品、お香、贈り物 — プライベートな空間のための、思いやりのある品々をご紹介します。",
+          "ササロウンは、ただ商品を並べる小物店ではなく、お客様に暮らしのあり方を提案する空間でありたいと願っています。私と愛する人、そして社会が末永く共にいられる方法を考え、少し手間がかかっても、自分や私たち、ひいては社会にも価値を添える行動ができる——そんな私たちでありたいと願いながら、この場所を営んでいます。",
+          "慌ただしく過ぎていく日常のなかで、しばし穏やかで深い時間を、ササロウンでご一緒しませんか。ある人にはそっと振り返る時間を、ある人には一味違うデートコースを、ある人には大切な人へのすてきな贈り物店になります。",
+          "自分のため、そして大切な人のための、思いやりある贈り物をお探しですか。一つひとつに意味が込められた品々の物語をのぞきながら、心を込めてお選びください。贈り物に込めるその気持ちを応援して、ラッピングはいつでも無料です :)"
+        ]
+      },
+      "zh-Hans": {
+        title: "Sasaroun",
+        lead: "为私密空间挑选的贴心之物",
+        body: [
+          "这里是 Sasaroun，一家位于大邱半月堂药令市场的生活小物店。我们为您呈现书籍、家居小物、陶瓷工艺品、香氛与礼品——为私密空间挑选的每一件贴心之物。",
+          "Sasaroun 不只是一家陈列商品的小店；我们希望它能成为一处向顾客传递生活方式的空间。我们思考着如何让自己、所爱之人与整个社会长久共处，哪怕要多花一点心力，也愿意采取为自身、社区乃至社会增添价值的行动。",
+          "在忙碌不停的日常里，请在 Sasaroun 停留片刻，享受一段宁静而深沉的时光。这里，对某些人是静心回望的时刻，对某些人是别具一格的约会去处，对某些人则是馈赠挚爱的精致礼品店。",
+          "您正在为自己、为珍视的人挑选一份用心的礼物吗？请细读每件用心之物背后的故事，用心挑选。为了那份赠予的心意，我们的礼品包装始终免费 :)"
+        ]
+      },
+      "zh-Hant": {
+        title: "Sasaroun",
+        lead: "為私密空間挑選的貼心之物",
+        body: [
+          "這裡是 Sasaroun，一家位於大邱半月堂藥令市場的生活小物店。我們為您呈現書籍、家居小物、陶瓷工藝品、香氛與禮品——為私密空間挑選的每一件貼心之物。",
+          "Sasaroun 不只是一家陳列商品的小店；我們希望它能成為一處向顧客傳遞生活方式的空間。我們思考著如何讓自己、所愛之人與整個社會長久共處，哪怕要多花一點心力，也願意採取為自身、社區乃至社會增添價值的行動。",
+          "在忙碌不停的日常裡，請在 Sasaroun 停留片刻，享受一段寧靜而深沉的時光。這裡，對某些人是靜心回望的時刻，對某些人是別具一格的約會去處，對某些人則是餽贈摯愛的精緻禮品店。",
+          "您正在為自己、為珍視的人挑選一份用心的禮物嗎？請細讀每件用心之物背後的故事，用心挑選。為了那份贈予的心意，我們的禮品包裝始終免費 :)"
+        ]
+      },
+      "th": {
+        title: "Sasaroun",
+        lead: "ของที่คัดสรรอย่างใส่ใจสำหรับพื้นที่ส่วนตัวของคุณ",
+        body: [
+          "นี่คือ Sasaroun ร้านของแต่งบ้านและของกระจุกกระจิกในตลาดยาสมุนไพรพันวอลดัง เมืองแทกู เรานำเสนอหนังสือ ของแต่งบ้าน งานเซรามิก น้ำหอม และของขวัญ — สิ่งของที่คัดสรรอย่างใส่ใจสำหรับพื้นที่ส่วนตัวของคุณ",
+          "Sasaroun ไม่ได้เป็นเพียงร้านที่จัดแสดงสินค้า แต่เราหวังให้เป็นพื้นที่ที่นำเสนอวิถีการใช้ชีวิตแก่ลูกค้า เราครุ่นคิดถึงหนทางที่ตัวเรา คนที่เรารัก และสังคมจะอยู่ร่วมกันได้ยาวนาน และแม้จะต้องใช้ความพยายามมากขึ้นสักนิด เราก็ปรารถนาจะลงมือทำสิ่งที่เพิ่มคุณค่าให้แก่ตัวเรา ชุมชน และสังคมโดยรวม",
+          "ท่ามกลางชีวิตประจำวันที่เร่งรีบ ขอเชิญใช้เวลาสักครู่อย่างสงบและลึกซึ้งไปกับเราที่ Sasaroun สำหรับบางคนที่นี่คือช่วงเวลาแห่งการทบทวนอย่างสงบ สำหรับบางคนคือเดตคอร์สที่แปลกใหม่ และสำหรับบางคนคือร้านของขวัญแสนพิเศษเพื่อคนที่รัก",
+          "คุณกำลังมองหาของขวัญที่ใส่ใจสำหรับตัวเองหรือคนที่คุณรักอยู่หรือเปล่า? ลองอ่านเรื่องราวเบื้องหลังของแต่ละชิ้นที่เปี่ยมความหมาย แล้วเลือกอย่างพิถีพิถัน เราสนับสนุนน้ำใจในการมอบของขวัญ จึงห่อของขวัญให้ฟรีเสมอ :)"
+        ]
+      },
+      "es": {
+        title: "Sasaroun",
+        lead: "Objetos pensados para tu espacio privado",
+        body: [
+          "Esto es Sasaroun, una tienda de decoración y objetos para el hogar en el mercado de hierbas medicinales de Banwoldang, en Daegu. Presentamos libros, objetos de decoración, cerámica artesanal, fragancias y regalos: piezas escogidas con cuidado para tu espacio privado.",
+          "Sasaroun aspira a ser más que una tienda que expone productos; deseamos ser un espacio que propone una forma de vida. Reflexionamos sobre cómo nosotros, nuestros seres queridos y la sociedad podemos convivir durante mucho tiempo y, aunque cueste un poco más de esfuerzo, sobre cómo actuar de maneras que aporten valor a nosotros mismos, a nuestra comunidad y a la sociedad.",
+          "En medio del ajetreo diario, tómate un momento de calma y reflexión con nosotros en Sasaroun. Para algunos será un tiempo de serena introspección; para otros, un plan de cita diferente; y para otros, una hermosa tienda de regalos para alguien querido.",
+          "¿Buscas un regalo pensado con cariño para ti o para quienes amas? Descubre la historia detrás de cada objeto lleno de significado y elige con atención. Apoyamos la intención que hay en cada regalo: la envoltura es siempre gratuita :)"
+        ]
+      },
+      "fr": {
+        title: "Sasaroun",
+        lead: "Des objets pensés pour votre espace intime",
+        body: [
+          "Voici Sasaroun, une boutique d'objets et de décoration située au marché de plantes médicinales de Banwoldang, à Daegu. Nous présentons des livres, des objets déco, des céramiques artisanales, des parfums et des cadeaux : des pièces choisies avec soin pour votre espace intime.",
+          "Sasaroun souhaite être plus qu'une boutique qui expose des produits ; nous espérons être un lieu qui propose un art de vivre. Nous réfléchissons à la manière dont nous, nos proches et la société pouvons coexister durablement et, même au prix d'un peu plus d'effort, à des gestes qui ajoutent de la valeur à nous-mêmes, à notre communauté et à la société.",
+          "Au cœur d'un quotidien pressé, accordez-vous un moment de calme et de profondeur chez Sasaroun. Pour certains, ce sera un temps de réflexion paisible ; pour d'autres, une sortie à deux originale ; et pour d'autres encore, une belle boutique de cadeaux pour un être cher.",
+          "Cherchez-vous un cadeau attentionné pour vous-même ou pour ceux que vous aimez ? Découvrez l'histoire de chaque objet porteur de sens et choisissez avec soin. Nous soutenons l'intention derrière chaque cadeau : l'emballage est toujours offert :)"
+        ]
+      },
+      "de": {
+        title: "Sasaroun",
+        lead: "Durchdachte Dinge für deinen privaten Raum",
+        body: [
+          "Das ist Sasaroun, ein Laden für Wohnaccessoires und schöne Dinge auf dem Heilkräutermarkt von Banwoldang in Daegu. Wir zeigen Bücher, Wohnaccessoires, Keramik, Düfte und Geschenke — sorgsam ausgewählte Dinge für deinen privaten Raum.",
+          "Sasaroun möchte mehr sein als ein Laden, der nur Produkte ausstellt; wir hoffen, ein Ort zu sein, der eine Art zu leben vorschlägt. Wir denken darüber nach, wie wir, unsere Liebsten und die Gesellschaft lange miteinander leben können — und wie wir, auch wenn es etwas mehr Mühe kostet, mit unserem Handeln Wert für uns selbst, unsere Gemeinschaft und die Gesellschaft schaffen.",
+          "Nimm dir mitten im hektischen Alltag einen Moment der Ruhe und Tiefe bei uns in Sasaroun. Für manche wird es eine Zeit stiller Einkehr, für andere ein besonderes Date, und für wieder andere ein wunderbarer Geschenkeladen für einen lieben Menschen.",
+          "Suchst du ein durchdachtes Geschenk für dich selbst oder für die Menschen, die du liebst? Entdecke die Geschichte hinter jedem bedeutungsvollen Stück und wähle mit Bedacht. Wir unterstützen die Absicht hinter jedem Geschenk — das Einpacken ist immer kostenlos :)"
+        ]
+      },
+      "vi": {
+        title: "Sasaroun",
+        lead: "Những món đồ chu đáo cho không gian riêng của bạn",
+        body: [
+          "Đây là Sasaroun, một cửa hàng đồ trang trí và vật phẩm nhỏ tại chợ dược liệu Banwoldang, thành phố Daegu. Chúng tôi giới thiệu sách, đồ trang trí, gốm thủ công, hương thơm và quà tặng — những món đồ được chọn lựa chu đáo cho không gian riêng tư của bạn.",
+          "Sasaroun mong muốn không chỉ là một cửa hàng trưng bày sản phẩm, mà là một không gian gợi mở một lối sống cho khách hàng. Chúng tôi trăn trở về cách để bản thân, những người thân yêu và cả xã hội có thể chung sống lâu dài; và dù có vất vả hơn một chút, vẫn mong được hành động sao cho thêm giá trị cho chính mình, cho cộng đồng và cho xã hội.",
+          "Giữa nhịp sống hối hả thường ngày, hãy dành một khoảnh khắc bình yên và sâu lắng cùng chúng tôi tại Sasaroun. Với ai đó, nơi đây là khoảng lặng để chiêm nghiệm; với ai đó là một điểm hẹn hò mới lạ; và với ai đó là một cửa hàng quà tặng tuyệt vời dành cho người thương.",
+          "Bạn đang tìm một món quà chu đáo cho bản thân hoặc cho những người mình yêu thương? Hãy lắng nghe câu chuyện đằng sau từng món đồ ý nghĩa và chọn lựa bằng cả tấm lòng. Trân trọng tấm lòng gửi trao trong mỗi món quà, chúng tôi luôn gói quà miễn phí :)"
+        ]
+      },
+      "id": {
+        title: "Sasaroun",
+        lead: "Benda penuh perhatian untuk ruang pribadi Anda",
+        body: [
+          "Ini Sasaroun, toko dekorasi dan pernak-pernik di Pasar Herbal Banwoldang, Daegu. Kami menghadirkan buku, dekorasi rumah, kerajinan keramik, wewangian, dan hadiah — benda-benda penuh perhatian untuk ruang pribadi Anda.",
+          "Sasaroun ingin menjadi lebih dari sekadar toko yang memajang produk; kami berharap menjadi ruang yang menawarkan cara hidup kepada pelanggan. Kami merenungkan bagaimana diri kami, orang-orang terkasih, dan masyarakat dapat hidup berdampingan dalam waktu yang lama — dan meski perlu sedikit lebih banyak usaha, kami ingin bertindak dengan cara yang menambah nilai bagi diri sendiri, komunitas, dan masyarakat.",
+          "Di tengah keseharian yang sibuk, luangkan sejenak waktu yang tenang dan mendalam bersama kami di Sasaroun. Bagi sebagian orang, ini menjadi waktu untuk merenung dengan tenang; bagi yang lain, tempat kencan yang berbeda; dan bagi yang lain lagi, toko hadiah yang indah untuk orang tersayang.",
+          "Sedang mencari hadiah penuh perhatian untuk diri sendiri atau orang-orang yang Anda cintai? Simaklah kisah di balik setiap benda yang bermakna, lalu pilihlah dengan penuh perhatian. Menghargai ketulusan di balik setiap pemberian, pembungkusan hadiah selalu gratis :)"
+        ]
+      },
+      "ru": {
+        title: "Sasaroun",
+        lead: "Продуманные вещи для вашего личного пространства",
+        body: [
+          "Это Sasaroun — магазин предметов интерьера и приятных мелочей на рынке лекарственных трав Панвольдан в Тэгу. Мы представляем книги, предметы декора, керамику ручной работы, ароматы и подарки — продуманные вещи, выбранные для вашего личного пространства.",
+          "Sasaroun хочет быть не просто магазином, где выставлены товары; мы надеемся стать пространством, которое предлагает образ жизни. Мы размышляем о том, как мы сами, наши близкие и всё общество можем долго существовать вместе, — и как, пусть даже с чуть большими усилиями, действовать так, чтобы приносить пользу себе, своему сообществу и обществу в целом.",
+          "В суете повседневности подарите себе минуту спокойствия и глубины вместе с нами в Sasaroun. Для кого-то это станет временем тихих размышлений, для кого-то — необычным свиданием, а для кого-то — чудесным магазином подарков для дорогого человека.",
+          "Ищете продуманный подарок для себя или для тех, кого любите? Загляните в историю каждой вещи, наполненной смыслом, и выбирайте с душой. Поддерживая искренность за каждым подарком, мы всегда упаковываем его бесплатно :)"
+        ]
+      }
+    };
+
+    var PLACEHOLDER = {
+      "ko": "여기에 사사로운 소개 글이 들어갑니다. (원문을 주시면 채워 드립니다)",
+      "en": "The introduction to Sasaroun will appear here. (Sample layout)",
+      "ja": "ここに「ササロウン」の紹介文が入ります。（サンプル）",
+      "zh-Hans": "这里将显示「사사로운」的介绍文字。（示例）",
+      "zh-Hant": "這裡將顯示「사사로운」的介紹文字。（範例）",
+      "th": "ข้อความแนะนำของ 사사로운 จะแสดงที่นี่ (ตัวอย่าง)",
+      "es": "Aquí aparecerá la presentación de Sasaroun. (Diseño de muestra)",
+      "fr": "La présentation de Sasaroun apparaîtra ici. (Exemple)",
+      "de": "Hier erscheint die Vorstellung von Sasaroun. (Beispiel)",
+      "vi": "Phần giới thiệu về Sasaroun sẽ hiển thị ở đây. (Bố cục mẫu)",
+      "id": "Pengantar tentang Sasaroun akan muncul di sini. (Tata letak contoh)",
+      "ru": "Здесь появится описание Sasaroun. (Пример макета)"
+    };
+
+    /* ══════════════════════════════════════════════════════════════
+       LOGIC — 아래는 수정할 필요 없습니다.
+       ══════════════════════════════════════════════════════════════ */
+    var picker  = document.getElementById("picker");
+    var detail  = document.getElementById("detail");
+    var langsEl = document.getElementById("langs");
+
+    // 사진 렌더 (파일 없으면 자리표시자)
+    (function renderPhotos() {
+      var el = document.getElementById("photos");
+      PHOTOS.forEach(function (src) {
+        var fig = document.createElement("figure");
+        fig.className = "photo";
+        var img = document.createElement("img");
+        img.alt = "사사로운";
+        img.loading = "lazy";
+        img.onerror = function () {
+          fig.classList.add("photo--empty");
+          img.remove();
+          fig.innerHTML = "<span>사진</span>";
+        };
+        img.src = src;
+        fig.appendChild(img);
+        el.appendChild(fig);
+      });
+    })();
+
+    // 언어 버튼 렌더
+    LANGS.forEach(function (l) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "lang";
+      btn.setAttribute("lang", l.code);
+      btn.setAttribute("aria-label", l.latin);
+      btn.innerHTML =
+        '<span class="lang__native">' + l.native + '</span>' +
+        '<span class="lang__latin">' + l.latin + '</span>';
+      btn.addEventListener("click", function () { location.hash = l.code; });
+      langsEl.appendChild(btn);
+    });
+
+    function show(code) {
+      var c = CONTENT[code];
+      if (!c) { showPicker(); return; }
+
+      document.documentElement.lang = code;
+      document.getElementById("dTitle").textContent = c.title;
+      document.getElementById("dLead").textContent  = c.lead || "";
+      document.getElementById("backLabel").textContent = BACK[code] || "Change language";
+
+      var bodyEl = document.getElementById("dBody");
+      bodyEl.innerHTML = "";
+      if (c.body && c.body.length) {
+        c.body.forEach(function (para) {
+          var p = document.createElement("p");
+          p.textContent = para;
+          bodyEl.appendChild(p);
+        });
+      } else {
+        var note = document.createElement("div");
+        note.className = "placeholder";
+        note.textContent = PLACEHOLDER[code] || PLACEHOLDER.en;
+        bodyEl.appendChild(note);
+      }
+
+      picker.classList.add("off");
+      detail.classList.add("on");
+      window.scrollTo(0, 0);
+    }
+
+    function showPicker() {
+      detail.classList.remove("on");
+      picker.classList.remove("off");
+      document.documentElement.lang = "ko";
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById("back").addEventListener("click", function () {
+      location.hash = "";
+    });
+
+    function route() {
+      var code = decodeURIComponent(location.hash.replace(/^#/, "")).trim();
+      if (code && CONTENT[code]) { show(code); }
+      else { showPicker(); }
+    }
+
+    window.addEventListener("hashchange", route);
+    route();
+  </script>
+</body>
+</html>
