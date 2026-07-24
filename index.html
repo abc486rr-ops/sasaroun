@@ -57,21 +57,32 @@
       font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
     }
 
-    /* ── Photo strip (edge-to-edge, horizontal scroll) ──────── */
-    .photos {
-      display: flex; gap: 10px; overflow-x: auto;
-      margin: 40px -24px 0; padding: 0 24px 6px;
+    /* ── Photo carousel (auto-advancing, swipe, peek) ───────── */
+    .gallery {
+      position: relative;
+      display: flex; gap: 12px; overflow-x: auto;
+      margin: 40px 0 0; padding: 0 11% 4px;
+      scroll-snap-type: x proximity; scroll-behavior: smooth;
+      scroll-padding: 0 11%;
       -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
-    .photos::-webkit-scrollbar { display: none; }
-    .photo {
-      flex: 0 0 auto; width: 156px; height: 208px; margin: 0;
-      border-radius: 14px; overflow: hidden;
+    .gallery::-webkit-scrollbar { display: none; }
+    .slide {
+      flex: 0 0 78%; scroll-snap-align: center; margin: 0;
+      aspect-ratio: 3 / 4; border-radius: 16px; overflow: hidden;
       background: var(--card); border: 1px solid var(--line);
     }
-    .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .photo--empty { display: flex; align-items: center; justify-content: center; border-style: dashed; border-color: var(--gold); }
-    .photo--empty span { font-size: 12px; letter-spacing: 0.1em; color: var(--sub); }
+    .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .slide--empty { display: flex; align-items: center; justify-content: center; border-style: dashed; border-color: var(--gold); }
+    .slide--empty span { font-size: 12px; letter-spacing: 0.1em; color: var(--sub); }
+
+    .dots { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%; padding: 0;
+      border: none; background: var(--line); cursor: pointer;
+      transition: background .2s ease, transform .2s ease;
+    }
+    .dot.on { background: var(--gold); transform: scale(1.3); }
 
     /* ── Language picker (slim single-column list) ──────────── */
     .pick__title {
@@ -155,8 +166,9 @@
       <div class="detail__body" id="dBody"></div>
     </article>
 
-    <!-- Photo strip -->
-    <div class="photos" id="photos" aria-label="사사로운"></div>
+    <!-- Photo carousel -->
+    <div class="gallery" id="gallery" aria-label="사사로운"></div>
+    <div class="dots" id="dots"></div>
 
     <footer class="footer">
       <span>사사로운 · 私思 · Sasaroun</span>
@@ -170,7 +182,10 @@
        PHOTOS — photos/ 폴더에 이미지를 넣고 아래 파일명만 맞춰주세요.
        파일이 없으면 자동으로 "사진" 자리표시자가 표시됩니다.
        ══════════════════════════════════════════════════════════════ */
-    var PHOTOS = ["photos/1.jpg", "photos/2.jpg", "photos/3.jpg"];
+    var PHOTOS = [
+      "photos/1.jpg", "photos/2.jpg", "photos/3.jpg", "photos/4.jpg",
+      "photos/5.jpg", "photos/6.jpg", "photos/7.jpg"
+    ];
 
     /* ══════════════════════════════════════════════════════════════
        CONTENT — 여기만 채우면 됩니다.
@@ -345,24 +360,73 @@
     var detail  = document.getElementById("detail");
     var langsEl = document.getElementById("langs");
 
-    // 사진 렌더 (파일 없으면 자리표시자)
-    (function renderPhotos() {
-      var el = document.getElementById("photos");
-      PHOTOS.forEach(function (src) {
+    // 사진 카루셀 (자동 슬라이드 + 스와이프 + 점 인디케이터)
+    (function buildCarousel() {
+      var gallery = document.getElementById("gallery");
+      var dotsEl  = document.getElementById("dots");
+      var n = PHOTOS.length;
+      if (!n) { return; }
+
+      PHOTOS.forEach(function (src, i) {
         var fig = document.createElement("figure");
-        fig.className = "photo";
+        fig.className = "slide";
         var img = document.createElement("img");
         img.alt = "사사로운";
         img.loading = "lazy";
         img.onerror = function () {
-          fig.classList.add("photo--empty");
+          fig.classList.add("slide--empty");
           img.remove();
           fig.innerHTML = "<span>사진</span>";
         };
         img.src = src;
         fig.appendChild(img);
-        el.appendChild(fig);
+        gallery.appendChild(fig);
+
+        var dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "dot" + (i === 0 ? " on" : "");
+        dot.setAttribute("aria-label", "사진 " + (i + 1));
+        dot.addEventListener("click", function () { go(i); reset(); });
+        dotsEl.appendChild(dot);
       });
+
+      var slides = gallery.children;
+      var dots = dotsEl.children;
+      var timer = null;
+
+      function centerOf(i) {
+        var s = slides[i];
+        return s.offsetLeft - (gallery.clientWidth - s.clientWidth) / 2;
+      }
+      function go(i) { gallery.scrollTo({ left: centerOf(i), behavior: "smooth" }); }
+      function current() {
+        var c = gallery.scrollLeft, best = 0, min = Infinity;
+        for (var i = 0; i < n; i++) {
+          var d = Math.abs(centerOf(i) - c);
+          if (d < min) { min = d; best = i; }
+        }
+        return best;
+      }
+      function paint(i) {
+        for (var k = 0; k < n; k++) { dots[k].classList.toggle("on", k === i); }
+      }
+      function reset() {
+        clearInterval(timer);
+        timer = setInterval(function () { go((current() + 1) % n); }, 4500);
+      }
+
+      var raf = null;
+      gallery.addEventListener("scroll", function () {
+        if (raf) { return; }
+        raf = requestAnimationFrame(function () { raf = null; paint(current()); });
+      }, { passive: true });
+
+      // 사용자가 만지면 타이머 리셋
+      ["pointerdown", "touchstart", "wheel"].forEach(function (ev) {
+        gallery.addEventListener(ev, reset, { passive: true });
+      });
+
+      reset();
     })();
 
     // 언어 버튼 렌더
