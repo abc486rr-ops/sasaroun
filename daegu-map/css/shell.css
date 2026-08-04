@@ -9,10 +9,11 @@
 }
 
 /* 여행갈피의 세이지 그린 머리띠 */
+/* 지도 레이어(30)보다 위. 지도에서도 뒤로가기와 진행률이 그대로 보여야 한다. */
 .hd {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: var(--gap-sm);

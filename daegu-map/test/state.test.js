@@ -166,6 +166,25 @@ test('전환 중 들어온 pop 은 도착 후에 처리한다', () => {
   assert.equal(m.depth, CURATORS)
 })
 
+/* ── 같은 뎁스에서 맥락만 교체 (지도에서 다른 핀을 눌렀을 때) ── */
+
+test('같은 뎁스에서 맥락만 갈아끼운다', () => {
+  const { m, log } = setup()
+  m.request(DECK, { curator: 'a' }); m.settle()
+  log.length = 0
+
+  assert.equal(m.replaceCtx({ curator: 'a', place: 'yurak' }), true)
+  assert.equal(m.depth, DECK, '뎁스는 그대로다')
+  assert.deepEqual(m.ctx, { curator: 'a', place: 'yurak' })
+  assert.equal(log.length, 0, '전환을 일으키지 않는다')
+})
+
+test('전환 중에는 맥락을 갈아끼우지 않는다', () => {
+  const { m } = setup()
+  m.request(DECK, { curator: 'a' })
+  assert.equal(m.replaceCtx({ curator: 'b' }), false)
+})
+
 /* 기본 타이머의 브라우저 호출 규칙 검사는 state-timers.test.js 에 있다.
  * state.js 를 불러오기 전에 전역을 바꿔야 해서 파일을 분리했다. */
 

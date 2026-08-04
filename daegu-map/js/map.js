@@ -6,19 +6,37 @@ const ATTR = '&copy; OpenStreetMap &copy; CARTO'
 const ZOOM = 16
 const TILE_FAIL_LIMIT = 6 // 이만큼 실패하면 지도를 포기하고 링크로 대체한다
 
-/* 기본 마커 이미지 대신 손그림 톤의 잉크 점을 쓴다. 이미지 파일이 필요 없다. */
-const pin = (label, on) =>
-  L.divIcon({
-    className: '',
-    html: `<span class="pin${on ? ' pin--on' : ''}">${label}</span>`,
+const esc = (s) =>
+  String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+
+/* 기본 마커 이미지 대신 손그림 톤의 잉크 점. 이미지 파일이 필요 없다.
+ * 이름표는 점 옆에 띄우되 아이콘 상자 밖으로 흘려보내, 점이 좌표에서 밀리지 않게 한다. */
+const pin = (label, name, { visited, current }) => {
+  const cls = ['pin', visited && 'pin--on', current && 'pin--cur'].filter(Boolean).join(' ')
+  return L.divIcon({
+    className: 'pin-wrap',
+    html: `<span class="${cls}">${label}</span><span class="pin-name">${esc(name)}</span>`,
     iconSize: [26, 26],
     iconAnchor: [13, 13]
   })
+}
 
 export function createMap({ el, fallbackEl, onPick, onTileFail }) {
   let map = null
   let markers = new Map()
+  let list = []
+  let visitedRef = null
+  let currentId = null
   let failed = 0
+
+  const iconFor = (place, i) =>
+    pin(String(i + 1), place.name, {
+      visited: visitedRef?.has(place.id),
+      current: place.id === currentId
+    })
+
+  const repaint = () =>
+    list.forEach((p, i) => markers.get(p.id)?.setIcon(iconFor(p, i)))
 
   function ensure() {
     if (map) return map
@@ -48,11 +66,13 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
 
     setPlaces(places, { visited } = {}) {
       const m = ensure()
+      list = places
+      visitedRef = visited ?? null
       markers.forEach((mk) => mk.remove())
       markers = new Map(
         places.map((p, i) => {
           const mk = L.marker([p.lat, p.lng], {
-            icon: pin(String(i + 1), visited?.has(p.id)),
+            icon: iconFor(p, i),
             title: p.name,
             keyboard: true,
             alt: p.name
@@ -64,8 +84,15 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
       )
     },
 
-    markVisited(id, on, index) {
-      markers.get(id)?.setIcon(pin(String(index + 1), on))
+    /** 지금 카드에 떠 있는 장소를 표시한다. 비슷한 자리에 번호가 몰리면 구분이 안 된다. */
+    setCurrent(id) {
+      currentId = id
+      repaint()
+      markers.get(id)?.setZIndexOffset(1000)
+    },
+
+    markVisited() {
+      repaint()
     },
 
     focus(place, { animate = true } = {}) {

@@ -109,6 +109,14 @@ export function createMachine({
       arrive(false)
     },
 
+    /** 뎁스는 그대로 두고 맥락만 바꾼다 — 지도에서 다른 핀을 눌렀을 때처럼.
+     *  전환을 일으키지 않으므로 히스토리도 호출한 쪽이 replaceState 로 정리한다. */
+    replaceCtx(next) {
+      if (transiting()) return false
+      ctx = next ?? null
+      return true
+    },
+
     /** popstate 등 외부에서 목표 뎁스가 바뀌었을 때. */
     pop(to) {
       if (!isDepth(to)) return

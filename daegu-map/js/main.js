@@ -82,33 +82,43 @@ function boot(data) {
    * 투명하기만 하면 화면을 덮은 채 덱의 터치를 가로챈다. */
   let mapToken = 0
 
-  function enterMap(place) {
-    mapToken += 1
-    dom.deckTrack.classList.add('deck--flip')
-    dom.mapLayer.hidden = false
-    requestAnimationFrame(() => dom.mapLayer.classList.add('map-layer--on'))
-    map.setPlaces(shown, { visited })
-    map.refresh()
-    map.focus(place)
+  /** 지도 위 카드를 지금 장소로 맞춘다. 진입할 때도, 다른 핀을 눌렀을 때도 여기를 지난다. */
+  function showCard(place, { animate = true } = {}) {
+    map.setCurrent(place.id)
+    map.focus(place, { animate })
     if (map.broken) renderFallback({ host: dom.mapFallback, place })
     renderPlaceCard({
       host: dom.pcard,
       place,
       visited,
-      onToggle: (p) => {
+      onToggle: () => {
         refreshCount()
-        map.markVisited(p.id, visited.has(p.id), shown.indexOf(p))
+        map.markVisited()
         deck.refresh()
       },
       onClose: () => history.back()
     })
   }
 
+  function enterMap(place) {
+    mapToken += 1
+    dom.deckScr.classList.add('deck--flip')
+    dom.mapLayer.hidden = false
+    // 리플로를 강제해 transition 시작점을 확정한다.
+    // requestAnimationFrame 은 탭이 백그라운드로 취급되면 돌지 않아,
+    // 지도가 투명한 채로 남는 상태가 만들어진다.
+    void dom.mapLayer.offsetWidth
+    dom.mapLayer.classList.add('map-layer--on')
+    map.setPlaces(shown, { visited })
+    map.refresh()
+    showCard(place, { animate: false })
+  }
+
   function leaveMap() {
     const token = (mapToken += 1)
     hidePlaceCard(dom.pcard)
     dom.mapLayer.classList.remove('map-layer--on')
-    dom.deckTrack.classList.remove('deck--flip')
+    dom.deckScr.classList.remove('deck--flip')
     setTimeout(() => {
       // 그 사이 다시 지도로 들어갔으면 건드리지 않는다
       if (token === mapToken) dom.mapLayer.hidden = true
@@ -137,6 +147,15 @@ function boot(data) {
 
   function openPlace(place) {
     const ctx = { curator: machine.ctx?.curator, place }
+
+    /* 이미 지도에 있으면 카드만 갈아끼운다.
+     * pushState 를 쌓으면 핀을 누른 횟수만큼 뒤로가기를 눌러야 덱으로 나온다. */
+    if (machine.depth === MAP && machine.replaceCtx(ctx)) {
+      history.replaceState({ depth: MAP }, '', urlFor(MAP, ctx))
+      showCard(place)
+      return
+    }
+
     if (!machine.request(MAP, ctx)) return
     history.pushState({ depth: MAP }, '', urlFor(MAP, ctx))
   }

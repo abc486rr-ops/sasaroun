@@ -1,5 +1,6 @@
 /* 지도 레이어 — 3D 변환 컨텍스트 바깥, 전체 화면 */
 
+/* 헤더(40) 아래, 본문 위. 헤더가 가리는 만큼은 focus() 가 감안해 앉힌다. */
 .map-layer {
   position: fixed;
   inset: 0;
@@ -41,13 +42,17 @@
   color: var(--sub);
 }
 
-/* 기본 마커 이미지 대신 잉크 점 */
+/* 기본 마커 이미지 대신 잉크 점 + 이름표 */
+.pin-wrap {
+  overflow: visible;
+}
+
 .pin {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
   border-radius: 50%;
   background: var(--card);
   border: 1.5px solid var(--ink);
@@ -56,11 +61,50 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   box-sizing: border-box;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast);
 }
 
 .pin--on {
   background: var(--ink);
   color: var(--card);
+}
+
+/* 지금 카드에 떠 있는 장소.
+ * 방문 여부(채움)를 지우지 않으려고 색을 덮는 대신 세이지 테를 두른다. */
+.pin--cur {
+  background: var(--sage);
+  color: var(--ink);
+  border-width: 2px;
+  box-shadow: 0 0 0 4px var(--sage), 0 0 0 5.5px var(--ink);
+  transform: scale(1.12);
+}
+
+.pin--cur.pin--on {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.pin-name {
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: rgba(254, 254, 254, 0.86);
+  border-radius: 2px;
+  padding: 0 4px;
+  pointer-events: none;
+}
+
+.pin--cur ~ .pin-name {
+  left: 38px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--card);
+  box-shadow: 0 0 0 1px var(--sage-deep);
 }
 
 /* 장소 카드 — 지도 위 하단 */
@@ -191,4 +235,10 @@
   transition: transform var(--dur-slow) var(--ease), opacity var(--dur-slow) var(--ease);
   transform: perspective(1200px) rotateY(-88deg) scale(0.94);
   opacity: 0;
+}
+
+/* 점 인디케이터도 같이 물러난다. 남겨두면 페이드 도중 지도 위로 비친다. */
+.deck--flip .dots {
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
 }
