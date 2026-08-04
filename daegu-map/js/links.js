@@ -12,10 +12,15 @@
 
 const enc = encodeURIComponent
 
+/* 카카오는 좌표로 핀을 찍으므로 이름이 달라도 위치는 정확하다. 이름은 라벨일 뿐이다. */
 export const kakaoLink = (place) =>
   `https://map.kakao.com/link/map/${enc(place.name)},${place.lat},${place.lng}`
 
-export const naverLink = (place) => `https://map.naver.com/p/search/${enc(place.name)}`
+/* 네이버는 이름으로 검색한다. 우리가 부르는 이름과 지도에 등록된 상호가 다르면
+ * 엉뚱한 곳이 나온다(예: 'E.C.C' → 네이버에는 '이씨씨커피'로 등록).
+ * 그런 곳은 데이터에 map_query 를 적어 검색어를 따로 준다. */
+export const naverLink = (place) =>
+  `https://map.naver.com/p/search/${enc(place.map_query || place.name)}`
 
 /** 새 탭으로 여는 앵커. rel 없이 target 만 주면 원본 창 참조가 넘어간다. */
 export function externalLink(text, href, cls = 'pcard__go') {
