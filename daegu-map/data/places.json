@@ -13,7 +13,6 @@
     "todo": [
       "정토브·김먼지 한 줄 특징",
       "새로 추가된 장소들의 업종(sector) 확인 — 지금은 추정값이다",
-      "추천인 캐릭터(art)는 임의 배정 — img/art/people/README.md 보고 바꿀 것",
       "hours·walk·link·photo 확인 후 입력"
     ]
   },
@@ -67,7 +66,7 @@
       "tagline": "자타 공인 빵순이",
       "traits": [],
       "intro": "",
-      "art": "people/p10.png",
+      "art": "people/p15.png",
       "places": [
         {
           "id": "lehem",
@@ -106,7 +105,7 @@
       "tagline": "(한 줄 특징을 적어주세요)",
       "traits": [],
       "intro": "",
-      "art": "people/p05.png",
+      "art": "people/p16.png",
       "places": [
         {
           "id": "seomun",
@@ -149,7 +148,7 @@
       "tagline": "(한 줄 특징을 적어주세요)",
       "traits": [],
       "intro": "",
-      "art": "people/p15.png",
+      "art": "people/p14.png",
       "places": [
         {
           "id": "seongbo",
