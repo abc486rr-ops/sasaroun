@@ -5,8 +5,8 @@
     "todo": [
       "팀 추천인 3명의 이름·특징·추천 장소를 채울 것 (places가 비면 목록에 뜨지 않음)",
       "각 장소의 note(추천 이유)는 추천인 본인의 말로 채울 것",
-      "art 파일 배정은 Phase 6에서 눈으로 보고 확정할 것",
-      "hours·walk·link·photo 확인 후 입력"
+      "hours·walk·link·photo 확인 후 입력",
+      "추천인 art 는 img/art/people/README.md 의 표를 보고 고를 것 (people/p01.png 형식)"
     ],
     "notes": [
       "map_query 는 네이버지도 검색어다. 등록 상호가 우리 표기와 다를 때만 넣는다.",
@@ -24,7 +24,7 @@
         "INTJ"
       ],
       "intro": "(추천인 소개 1~2문장)",
-      "art": "art-057-138x189.png",
+      "art": "people/p02.png",
       "places": [
         "sasaroun",
         "nangman",
