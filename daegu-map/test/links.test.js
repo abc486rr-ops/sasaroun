@@ -4,20 +4,23 @@ import { kakaoLink, naverAppLink, naverWebLink } from '../js/links.js'
 
 const place = { id: 'yurak', name: '유락', lat: 35.8731268038228, lng: 128.607293212309 }
 
-test('카카오는 이름·위도·경도를 쉼표로 잇는다', () => {
+/* 길찾기가 아니라 장소 표시로 연다. 열자마자 경로 탐색이 시작되면 안 된다. */
+test('카카오는 길찾기(link/to)가 아니라 장소 표시(link/map)로 연다', () => {
   assert.equal(
     kakaoLink(place),
-    'https://map.kakao.com/link/to/%EC%9C%A0%EB%9D%BD,35.8731268038228,128.607293212309'
+    'https://map.kakao.com/link/map/%EC%9C%A0%EB%9D%BD,35.8731268038228,128.607293212309'
   )
+  assert.ok(!kakaoLink(place).includes('/link/to/'))
 })
 
-test('네이버 앱 스킴에는 appname 이 반드시 들어간다', () => {
+test('네이버는 길찾기(route)가 아니라 장소 표시(place)로 연다', () => {
   const url = naverAppLink(place, 'sasaroun.example')
-  assert.match(url, /^nmap:\/\/route\/public\?/)
-  assert.match(url, /dlat=35\.8731268038228/)
-  assert.match(url, /dlng=128\.607293212309/)
-  assert.match(url, /dname=%EC%9C%A0%EB%9D%BD/)
-  assert.match(url, /appname=sasaroun\.example/)
+  assert.match(url, /^nmap:\/\/place\?/)
+  assert.ok(!url.includes('route'))
+  assert.match(url, /lat=35\.8731268038228/)
+  assert.match(url, /lng=128\.607293212309/)
+  assert.match(url, /name=%EC%9C%A0%EB%9D%BD/)
+  assert.match(url, /appname=sasaroun\.example/, 'appname 은 필수 파라미터다')
 })
 
 test('이름에 특수문자가 있어도 URL 이 깨지지 않는다', () => {
