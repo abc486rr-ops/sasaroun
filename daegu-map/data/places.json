@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "title": "사사로운이 추천하는 대구",
+    "updated": "2026-08-04",
+    "note_for_editor": "one_liner는 초안입니다. note는 사사로운이 직접 채워야 합니다. hours·walk·link·photo는 확인 후 채우세요."
+  },
+  "places": [
+    {
+      "id": "sasaroun",
+      "name": "사사로운",
+      "sector": "소품샵",
+      "lat": 35.8691796664691,
+      "lng": 128.587457813162,
+      "one_liner": "의미를 전하는 소품샵",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "nangman",
+      "name": "낭만젊음사랑",
+      "sector": "카페",
+      "lat": 35.8698680684602,
+      "lng": 128.599931990547,
+      "one_liner": "(한 줄 소개 초안 필요)",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "yurak",
+      "name": "유락",
+      "sector": "카페·프로젝트 공간",
+      "lat": 35.8731268038228,
+      "lng": 128.607293212309,
+      "one_liner": "카페처럼도 독립서점처럼도 보이는 프로젝트 공간",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "kawa-archive",
+      "name": "카와아카이브",
+      "sector": "소품샵",
+      "lat": 35.8741020193196,
+      "lng": 128.591465668006,
+      "one_liner": "일러스트레이터 카와의 굿즈와 여러 작가의 소품을 모은 곳",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "neuel",
+      "name": "느을",
+      "sector": "식당",
+      "lat": 35.8605649210964,
+      "lng": 128.598362976023,
+      "one_liner": "계절이 담긴 한 상을 차려내는 반상 식당",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "ecc",
+      "name": "E.C.C",
+      "sector": "카페",
+      "lat": 35.8721806522866,
+      "lng": 128.591067402461,
+      "one_liner": "누구와도 무엇과도 어울리는 커피",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "dicapri-m1955",
+      "name": "디카프리M1955",
+      "sector": "카페",
+      "lat": 35.8748272888384,
+      "lng": 128.591715016348,
+      "one_liner": "과정을 기록하는 브랜드가 내리는 커피",
+      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    }
+  ]
+}
