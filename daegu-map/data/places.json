@@ -2,15 +2,19 @@
   "meta": {
     "title": "사사로운이 추천하는 대구",
     "updated": "2026-08-04",
-    "todo": [
-      "팀 추천인 3명의 이름·특징·추천 장소를 채울 것 (places가 비면 목록에 뜨지 않음)",
-      "각 장소의 note(추천 이유)는 추천인 본인의 말로 채울 것",
-      "hours·walk·link·photo 확인 후 입력",
-      "추천인 art 는 img/art/people/README.md 의 표를 보고 고를 것 (people/p01.png 형식)"
-    ],
     "notes": [
+      "note(한 줄 평)는 장소가 아니라 추천인의 places 안에 붙는다. 같은 곳도 사람마다 다르게 말한다.",
       "map_query 는 네이버지도 검색어다. 등록 상호가 우리 표기와 다를 때만 넣는다.",
-      "유락은 네이버지도에 등록돼 있지 않다. 같은 주소에서 운영하는 '야행성동물'로 검색한다 — 오타가 아니니 고치지 말 것."
+      "유락은 네이버지도에 등록돼 있지 않다. 같은 주소에서 운영하는 '야행성동물'로 검색한다 — 오타가 아니니 고치지 말 것.",
+      "좌표가 null 인 곳은 아직 위치를 못 구한 곳이다. 덱에는 보이지만 지도 핀은 찍히지 않는다."
+    ],
+    "todo": [
+      "좌표 미확보 13곳의 주소를 알려주면 채울 수 있다",
+      "정토브·김먼지 한 줄 특징",
+      "새로 추가된 장소들의 업종(sector) 확인 — 지금은 추정값이다",
+      "폭스브롯 좌표는 OSM 의 달서구 진천동 지점이다. 맞는지 확인 필요",
+      "추천인 캐릭터(art)는 임의 배정 — img/art/people/README.md 보고 바꿀 것",
+      "hours·walk·link·photo 확인 후 입력"
     ]
   },
   "curators": [
@@ -18,52 +22,168 @@
       "id": "parksajang",
       "name": "박사장",
       "kind": "team",
-      "tagline": "조용하지만 감성적인 곳",
+      "tagline": "조용하면서 감성적인 곳을 선호",
       "traits": [
         "30대 후반",
         "INTJ"
       ],
-      "intro": "(추천인 소개 1~2문장)",
+      "intro": "",
       "art": "people/p12.png",
       "places": [
-        "sasaroun",
-        "nangman",
-        "yurak",
-        "kawa-archive",
-        "neuel",
-        "ecc",
-        "dicapri-m1955"
+        {
+          "id": "sasaroun",
+          "note": "의미를 전하는 소품샵"
+        },
+        {
+          "id": "nangman",
+          "note": "낭만과 젊음, 사랑이 가득한 공간"
+        },
+        {
+          "id": "neuel",
+          "note": "정성이 담긴 제철 한상"
+        },
+        {
+          "id": "dicapri-m1955",
+          "note": "치즈케이크 대구 1등"
+        },
+        {
+          "id": "ecc",
+          "note": "푸릇푸릇한 2층 공간이 멋드러짐"
+        },
+        {
+          "id": "kawa-archive",
+          "note": "사랑이 가득한 소품샵"
+        },
+        {
+          "id": "yurak",
+          "note": "대구의 축복, 귀여운 홍철이."
+        }
       ]
     },
     {
-      "id": "team-2",
-      "name": "(팀원 2 이름)",
+      "id": "leedaepyo",
+      "name": "이대표",
       "kind": "team",
-      "tagline": "(한 줄 특징)",
+      "tagline": "자타 공인 빵순이",
       "traits": [],
       "intro": "",
-      "art": null,
-      "places": []
+      "art": "people/p10.png",
+      "places": [
+        {
+          "id": "lehem",
+          "note": "우리밀로 만든 식사빵"
+        },
+        {
+          "id": "foxbrot",
+          "note": "독일식 식사빵, 당근케이크 맛집"
+        },
+        {
+          "id": "brownsugar",
+          "note": "케이크는 여기가 대구 1등,,"
+        },
+        {
+          "id": "lecomfe",
+          "note": "바게트 포함 다 맛있어."
+        },
+        {
+          "id": "sobe",
+          "note": "역시는 역시"
+        },
+        {
+          "id": "calif",
+          "note": "숨은 강자, 포카치아, 건강빵"
+        },
+        {
+          "id": "langsam",
+          "note": "랑잠샌드위치,,"
+        }
+      ]
     },
     {
-      "id": "team-3",
-      "name": "(팀원 3 이름)",
+      "id": "jeongtobe",
+      "name": "정토브",
       "kind": "team",
-      "tagline": "(한 줄 특징)",
+      "tagline": "(한 줄 특징을 적어주세요)",
       "traits": [],
       "intro": "",
-      "art": null,
-      "places": []
+      "art": "people/p05.png",
+      "places": [
+        {
+          "id": "seomun",
+          "note": "숙소에서 먹을 주전부리 포장 완!"
+        },
+        {
+          "id": "organic-moga",
+          "note": "레몬 파운드케이크 최고"
+        },
+        {
+          "id": "moska",
+          "note": "사고 싶은 식기류 한가득"
+        },
+        {
+          "id": "lilisun",
+          "note": "빈티지 쇼핑 잔뜩,, 안경 get"
+        },
+        {
+          "id": "duamonte",
+          "note": "주인아망 ❤️ (줄 한시간 섰지만 ㅠ.ㅠ)"
+        },
+        {
+          "id": "chorus-coffee",
+          "note": "우유크림케이크가 맛있었다"
+        },
+        {
+          "id": "busan-anmyeonok",
+          "note": "냉면 go"
+        },
+        {
+          "id": "sasaroun",
+          "note": "예쁜 책갈피를 샀지"
+        }
+      ]
     },
     {
-      "id": "team-4",
-      "name": "(팀원 4 이름)",
+      "id": "kimmunji",
+      "name": "김먼지",
       "kind": "team",
-      "tagline": "(한 줄 특징)",
+      "tagline": "(한 줄 특징을 적어주세요)",
       "traits": [],
       "intro": "",
-      "art": null,
-      "places": []
+      "art": "people/p15.png",
+      "places": [
+        {
+          "id": "seongbo",
+          "note": "고소하고 진해, 여름 필수!"
+        },
+        {
+          "id": "mulbineul",
+          "note": "어항속에 있는 듯해!"
+        },
+        {
+          "id": "brownsugar",
+          "note": "독일식 사과케이크 안먹어본 사람 없게 해주세요.."
+        },
+        {
+          "id": "seomun",
+          "note": "쫀득감자,망고빙수,땅콩빵,섹시한 떡볶이, 말랑이"
+        },
+        {
+          "id": "mirangsier",
+          "note": "겉바속촉 인생 휘낭시에야."
+        },
+        {
+          "id": "sasaroun",
+          "note": "마음이 편안해지는 소품샵, 한시간 순삭...텅장..."
+        },
+        {
+          "id": "sobe",
+          "note": "속이 가득한 모찌빵"
+        },
+        {
+          "id": "roudy-coffee",
+          "note": "디카페인 라떼가 이렇게 맛있다니..?"
+        }
+      ]
     },
     {
       "id": "guest-2026-08",
@@ -73,7 +193,7 @@
       "tagline": "(한 줄 특징)",
       "traits": [],
       "intro": "여행갈피에 남겨주신 기록에서",
-      "art": null,
+      "art": "people/p24.png",
       "places": []
     }
   ],
@@ -86,7 +206,6 @@
       "lng": 128.587457813162,
       "map_query": "사사로운 소품샵",
       "one_liner": "의미를 전하는 소품샵",
-      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -100,7 +219,6 @@
       "lat": 35.8698680684602,
       "lng": 128.599931990547,
       "one_liner": "우리는 낭만젊음사랑이 됩니다.",
-      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -115,7 +233,6 @@
       "lng": 128.607293212309,
       "map_query": "야행성동물",
       "one_liner": "카페처럼도 독립서점처럼도 보이는 프로젝트 공간",
-      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -130,7 +247,6 @@
       "lng": 128.591465668006,
       "map_query": "카와 아카이브 소품샵",
       "one_liner": "일러스트레이터 카와의 굿즈와 여러 작가의 소품을 모은 곳",
-      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -144,7 +260,6 @@
       "lat": 35.8605649210964,
       "lng": 128.598362976023,
       "one_liner": "계절이 담긴 한 상을 차려내는 반상 식당",
-      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -159,7 +274,6 @@
       "lng": 128.591067402461,
       "map_query": "이씨씨커피",
       "one_liner": "누구와도 무엇과도 어울리는 커피",
-      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -174,7 +288,240 @@
       "lng": 128.591715016348,
       "map_query": "디카프리 M1955",
       "one_liner": "과정을 기록하는 브랜드가 내리는 커피",
-      "note": "(추천 이유를 2~3문장으로)",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "seomun",
+      "name": "서문시장",
+      "sector": "시장",
+      "lat": 35.86943,
+      "lng": 128.5807059,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "brownsugar",
+      "name": "브라운 슈가",
+      "sector": "베이커리",
+      "lat": 35.8571491,
+      "lng": 128.605274,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "lecomfe",
+      "name": "레꽁프",
+      "sector": "베이커리",
+      "lat": 35.8330463018041,
+      "lng": 128.56876753241,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "mulbineul",
+      "name": "물비늘",
+      "sector": "공방",
+      "lat": 35.8738774463293,
+      "lng": 128.59439458662,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "foxbrot",
+      "name": "폭스브롯",
+      "sector": "베이커리",
+      "lat": 35.810054,
+      "lng": 128.531055,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "lehem",
+      "name": "레헴",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "sobe",
+      "name": "소베",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "calif",
+      "name": "칼리프",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "langsam",
+      "name": "랑잠",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "organic-moga",
+      "name": "오가닉 모가",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "moska",
+      "name": "모스카",
+      "sector": "소품샵",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "lilisun",
+      "name": "리리썬",
+      "sector": "빈티지샵",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "duamonte",
+      "name": "두아몽떼",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "chorus-coffee",
+      "name": "코러스커피",
+      "sector": "카페",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "busan-anmyeonok",
+      "name": "부산 안면옥",
+      "sector": "식당",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "seongbo",
+      "name": "성보 콩국수",
+      "sector": "식당",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "mirangsier",
+      "name": "미랑시에",
+      "sector": "베이커리",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-04"
+    },
+    {
+      "id": "roudy-coffee",
+      "name": "라우디커피",
+      "sector": "카페",
+      "lat": null,
+      "lng": null,
+      "one_liner": "",
       "photo": null,
       "hours": null,
       "walk": null,

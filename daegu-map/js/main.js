@@ -197,7 +197,14 @@ function boot(data) {
     thisMonth: new Date().toISOString().slice(0, 7),
     countVisited: (c) => visited.count(c.places),
     onPick: (c) => {
-      shown = c.places.map((id) => byId.get(id)).filter(Boolean).sort(byNewest)
+      // 한 줄 평은 추천인이 갖고 있다. 장소와 합쳐 덱에 올린다.
+      shown = c.places
+        .map(({ id, note }) => {
+          const p = byId.get(id)
+          return p && { ...p, note }
+        })
+        .filter(Boolean)
+        .sort(byNewest)
       deck.setPlaces(shown)
       if (!machine.request(DECK, { curator: c })) return
       history.pushState({ depth: DECK }, '', urlFor(DECK, { curator: c }))

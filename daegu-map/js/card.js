@@ -34,9 +34,12 @@ export function renderPlaceCard({ host, place, visited, onToggle, onClose }) {
   close.addEventListener('click', onClose)
 
   const body = el('div', 'pcard__body')
-  if (place.one_liner) body.append(el('p', 'pcard__one', place.one_liner))
+  if (place.note) body.append(el('p', 'pcard__one', place.note))
+  else if (place.one_liner) body.append(el('p', 'pcard__one', place.one_liner))
   if (place.hours) body.append(row('hours', place.hours))
   if (place.walk) body.append(row('walk', place.walk))
+  // 좌표를 못 구한 곳은 지도에 핀이 없다. 왜 없는지 말해준다.
+  if (!place.located) body.append(row('map', '위치 확인 중 — 이름으로 찾아보세요'))
 
   const foot = el('footer', 'pcard__foot')
 

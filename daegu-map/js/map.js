@@ -64,23 +64,28 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
       map?.invalidateSize()
     },
 
+    /* 좌표를 아직 못 구한 곳은 핀을 찍지 않는다.
+     * 다만 번호는 덱 순서를 그대로 쓴다 — 카드의 N°003 과 지도의 3 이 같아야 한다. */
     setPlaces(places, { visited } = {}) {
       const m = ensure()
       list = places
       visitedRef = visited ?? null
       markers.forEach((mk) => mk.remove())
       markers = new Map(
-        places.map((p, i) => {
-          const mk = L.marker([p.lat, p.lng], {
-            icon: iconFor(p, i),
-            title: p.name,
-            keyboard: true,
-            alt: p.name
+        places
+          .map((p, i) => [p, i])
+          .filter(([p]) => p.located)
+          .map(([p, i]) => {
+            const mk = L.marker([p.lat, p.lng], {
+              icon: iconFor(p, i),
+              title: p.name,
+              keyboard: true,
+              alt: p.name
+            })
+              .addTo(m)
+              .on('click', () => onPick?.(p))
+            return [p.id, mk]
           })
-            .addTo(m)
-            .on('click', () => onPick?.(p))
-          return [p.id, mk]
-        })
       )
     },
 
@@ -95,8 +100,13 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
       repaint()
     },
 
+    /** 좌표가 없으면 대신 전체를 보여준다 — 엉뚱한 곳으로 튀는 것보다 낫다. */
     focus(place, { animate = true } = {}) {
       const m = ensure()
+      if (!place.located) {
+        this.fitAll(list)
+        return
+      }
       // 하단 카드가 가리는 만큼 위로 올려 앉힌다
       const offset = Math.round(Math.min(innerHeight * 0.22, 170))
       m.setView([place.lat, place.lng], ZOOM, { animate: false })
@@ -104,12 +114,9 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
     },
 
     fitAll(places) {
-      if (!places.length) return
-      const m = ensure()
-      m.fitBounds(
-        places.map((p) => [p.lat, p.lng]),
-        { padding: [48, 48], maxZoom: ZOOM }
-      )
+      const pts = places.filter((p) => p.located).map((p) => [p.lat, p.lng])
+      if (!pts.length) return
+      ensure().fitBounds(pts, { padding: [48, 48], maxZoom: ZOOM })
     },
 
     get broken() {
