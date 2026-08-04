@@ -1,7 +1,7 @@
 /* 지도 위에 앉는 장소 카드. 덱 카드의 축약판이다.
  * 지도를 최대한 넓게 쓰되, 여기까지 내려온 이유(어디로 갈지)는 바로 보이게 한다. */
 
-import { kakaoLink, naverLink, externalLink } from './links.js'
+import { naverLink, externalLink } from './links.js'
 
 const el = (tag, cls, text) => {
   const n = document.createElement(tag)
@@ -16,14 +16,10 @@ const row = (label, value) => {
   return r
 }
 
-/* 손님이 평소 쓰는 앱으로 열리는 게 맞다. 둘 다 건다.
- * 네이버가 먼저다 — 국내 사용 비중이 더 높다. */
+/* 외부 지도로 보내는 링크. 자세한 선택 근거는 links.js 머리말에 있다. */
 function routes(place) {
   const wrap = el('div', 'pcard__routes')
-  wrap.append(
-    externalLink('네이버지도 →', naverLink(place)),
-    externalLink('카카오맵 →', kakaoLink(place), 'pcard__go pcard__go--sub')
-  )
+  wrap.append(externalLink('네이버지도에서 보기 →', naverLink(place)))
   return wrap
 }
 

@@ -199,11 +199,6 @@
   white-space: nowrap;
 }
 
-.pcard__go--sub {
-  color: var(--sub);
-  border-bottom-color: var(--grid);
-}
-
 .pcard__links {
   margin-top: var(--gap-sm);
   display: flex;
