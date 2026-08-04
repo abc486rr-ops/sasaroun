@@ -184,12 +184,24 @@
   padding-top: var(--gap-md);
 }
 
+.pcard__routes {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
 .pcard__go,
 .pcard__link {
   font-size: var(--label-size);
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid var(--sage-deep);
+  white-space: nowrap;
+}
+
+.pcard__go--sub {
+  color: var(--sub);
+  border-bottom-color: var(--grid);
 }
 
 .pcard__links {

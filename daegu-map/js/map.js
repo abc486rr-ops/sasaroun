@@ -117,7 +117,3 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
     }
   }
 }
-
-/* 지도가 못 뜨더라도 목적지에는 갈 수 있어야 한다. */
-export const kakaoLink = (place) =>
-  `https://map.kakao.com/link/to/${encodeURIComponent(place.name)},${place.lat},${place.lng}`

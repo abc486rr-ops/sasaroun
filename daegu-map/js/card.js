@@ -1,7 +1,7 @@
 /* 지도 위에 앉는 장소 카드. 덱 카드의 축약판이다.
  * 지도를 최대한 넓게 쓰되, 여기까지 내려온 이유(어디로 갈지)는 바로 보이게 한다. */
 
-import { kakaoLink } from './map.js'
+import { kakaoLink, bindNaver } from './links.js'
 
 const el = (tag, cls, text) => {
   const n = document.createElement(tag)
@@ -14,6 +14,24 @@ const row = (label, value) => {
   const r = el('div', 'pcard__row')
   r.append(el('span', 'label', label), el('span', 'pcard__val', value))
   return r
+}
+
+/* 길찾기는 손님이 평소 쓰는 앱으로 열리는 게 맞다. 둘 다 건다.
+ * 네이버가 먼저다 — 국내 사용 비중이 더 높다. */
+function routes(place) {
+  const wrap = el('div', 'pcard__routes')
+
+  const naver = el('a', 'pcard__go', '네이버지도 →')
+  naver.rel = 'noopener noreferrer'
+  bindNaver(naver, place)
+
+  const kakao = el('a', 'pcard__go pcard__go--sub', '카카오맵 →')
+  kakao.href = kakaoLink(place)
+  kakao.target = '_blank'
+  kakao.rel = 'noopener noreferrer'
+
+  wrap.append(naver, kakao)
+  return wrap
 }
 
 export function renderPlaceCard({ host, place, visited, onToggle, onClose }) {
@@ -46,12 +64,7 @@ export function renderPlaceCard({ host, place, visited, onToggle, onClose }) {
     onToggle(place)
   })
 
-  const go = el('a', 'pcard__go', '길찾기 →')
-  go.href = kakaoLink(place)
-  go.target = '_blank'
-  go.rel = 'noopener noreferrer'
-
-  foot.append(chk, go)
+  foot.append(chk, routes(place))
 
   const links = el('div', 'pcard__links')
   if (place.link) {
@@ -75,10 +88,6 @@ export function renderFallback({ host, place }) {
   const box = el('div', 'fb__box')
   box.append(el('span', 'label', 'map unavailable'), el('span', 'value', '지도를 불러오지 못했습니다'))
   box.append(el('p', 'fb__coord', `${place.lat.toFixed(5)}N ${place.lng.toFixed(5)}E`))
-  const a = el('a', 'pcard__go', '카카오맵에서 길찾기 →')
-  a.href = kakaoLink(place)
-  a.target = '_blank'
-  a.rel = 'noopener noreferrer'
-  box.append(a)
+  box.append(routes(place))
   host.replaceChildren(box)
 }
