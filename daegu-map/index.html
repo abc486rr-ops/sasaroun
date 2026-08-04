@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="css/shell.css">
 <link rel="stylesheet" href="css/curators.css">
 <link rel="stylesheet" href="css/deck.css">
+<link rel="stylesheet" href="css/all.css">
 <link rel="stylesheet" href="css/map.css">
 </head>
 <body data-depth="boot">
@@ -52,11 +53,27 @@
         </button>
         <ul id="past-list" class="curators" hidden></ul>
       </section>
+
+      <button id="all-entry" class="allcta" type="button">
+        <span class="label">everywhere</span>
+        <span class="value" id="all-entry-label">한눈에 보기 &rarr;</span>
+      </button>
     </section>
 
     <section id="scr-deck" class="scr" aria-label="추천 장소" hidden>
       <div id="deck" class="deck"></div>
       <ol id="dots" class="dots" aria-label="카드 위치"></ol>
+    </section>
+
+    <section id="scr-all" class="scr" aria-label="전체 장소 목록" hidden>
+      <div class="al__top">
+        <p class="scr__lead">
+          <span class="label">everywhere</span>
+          <span class="value" id="all-lead">모두가 고른 곳</span>
+        </p>
+        <button id="all-map" class="al__mapbtn" type="button">지도에서 보기 &rarr;</button>
+      </div>
+      <div id="all-list"></div>
     </section>
 
   </main>

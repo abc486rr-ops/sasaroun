@@ -113,10 +113,16 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
       m.panBy([0, offset], { animate })
     },
 
-    fitAll(places) {
+    /* 세이지 머리띠가 지도 위를 덮는다. 위쪽 여백을 그만큼 더 줘야
+     * 북쪽 끝 핀이 헤더 밑으로 숨지 않는다. */
+    fitAll(places, { top = 48 } = {}) {
       const pts = places.filter((p) => p.located).map((p) => [p.lat, p.lng])
       if (!pts.length) return
-      ensure().fitBounds(pts, { padding: [48, 48], maxZoom: ZOOM })
+      ensure().fitBounds(pts, {
+        paddingTopLeft: [24, top],
+        paddingBottomRight: [24, 48],
+        maxZoom: ZOOM
+      })
     },
 
     get broken() {

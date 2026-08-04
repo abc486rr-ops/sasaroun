@@ -161,6 +161,36 @@
   font-size: var(--body-size);
 }
 
+/* 누가 골랐는지 — 전체 목록에서 들어왔을 때만 뜬다 */
+.pcard__credits {
+  margin: var(--gap-sm) 0;
+  padding: var(--gap-sm) 0;
+  border-top: 1px solid var(--grid);
+  border-bottom: 1px solid var(--grid);
+}
+
+.pcard__names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-xs);
+  margin-top: 4px;
+}
+
+.pcard__name {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ink);
+  border: 1px solid var(--sage-deep);
+  border-radius: 999px;
+  padding: 0 10px;
+  background: var(--paper);
+}
+
+.pcard__name::after {
+  content: " →";
+  color: var(--sub);
+}
+
 .pcard__row {
   display: flex;
   align-items: baseline;
@@ -236,8 +266,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* 덱 카드가 뒤집혀 사라지는 연출 — 지도는 이 3D 바깥에서 따로 올라온다 */
-.deck--flip .deck__track {
+/* 지도로 내려가는 연출. 덱에서도 전체 목록에서도 같은 클래스를 쓴다 —
+ * 지도는 이 3D 바깥에서 따로 올라온다. */
+.scr--dive .deck__track {
   transform-origin: center center;
   transition: transform var(--dur-slow) var(--ease), opacity var(--dur-slow) var(--ease);
   transform: perspective(1200px) rotateY(-88deg) scale(0.94);
@@ -245,7 +276,24 @@
 }
 
 /* 점 인디케이터도 같이 물러난다. 남겨두면 페이드 도중 지도 위로 비친다. */
-.deck--flip .dots {
+.scr--dive .dots {
   opacity: 0;
   transition: opacity var(--dur) var(--ease);
+}
+
+/* 목록은 뒤집지 않는다. 카드 한 장이 아니라 스물다섯 줄이라, 뒤집으면 종잇장이 아니라
+ * 화면 전체가 접히는 것처럼 보인다. 제자리에서 가라앉기만 한다. */
+.scr--dive .al {
+  transition: opacity var(--dur) var(--ease), transform var(--dur-slow) var(--ease);
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+}
+
+/* 핀이 많으면 이름표가 서로 겹쳐 글씨가 뭉갠다. 지금 보고 있는 곳만 이름을 남긴다. */
+.map-layer--dense .pin-name {
+  display: none;
+}
+
+.map-layer--dense .pin--cur ~ .pin-name {
+  display: block;
 }

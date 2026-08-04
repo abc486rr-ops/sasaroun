@@ -23,7 +23,24 @@ function routes(place) {
   return wrap
 }
 
-export function renderPlaceCard({ host, place, visited, onToggle, onClose }) {
+/* 이 곳을 누가 골랐는지. 전체 목록에서 들어왔을 때만 붙인다 —
+ * 한 사람의 덱에서 내려왔다면 답이 이미 정해져 있어서 되묻는 꼴이 된다.
+ * 이름을 누르면 그 사람의 덱으로 건너간다. 겹치는 곳이 사람을 소개하는 통로가 된다. */
+function creditRow(who, onCurator) {
+  const wrap = el('div', 'pcard__credits')
+  wrap.append(el('span', 'label', `${who.length}명이 추천`))
+  const names = el('div', 'pcard__names')
+  who.forEach((c) => {
+    const b = el('button', 'pcard__name', c.name)
+    b.type = 'button'
+    b.addEventListener('click', () => onCurator(c))
+    names.append(b)
+  })
+  wrap.append(names)
+  return wrap
+}
+
+export function renderPlaceCard({ host, place, visited, onToggle, onClose, credits, onCurator }) {
   const head = el('div', 'pcard__head')
   head.append(el('span', 'label', place.sector || 'where to go'), el('span', 'value', place.name))
 
@@ -36,6 +53,7 @@ export function renderPlaceCard({ host, place, visited, onToggle, onClose }) {
   const body = el('div', 'pcard__body')
   if (place.note) body.append(el('p', 'pcard__one', place.note))
   else if (place.one_liner) body.append(el('p', 'pcard__one', place.one_liner))
+  if (credits?.length) body.append(creditRow(credits, onCurator))
   if (place.hours) body.append(row('hours', place.hours))
   if (place.walk) body.append(row('walk', place.walk))
   // 좌표를 못 구한 곳은 지도에 핀이 없다. 왜 없는지 말해준다.

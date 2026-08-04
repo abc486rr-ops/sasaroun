@@ -1,0 +1,148 @@
+/* 전체 목록 — 카드가 아니라 줄. 스물다섯 개를 한 화면 안에서 훑게 한다 */
+
+.al__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+}
+
+/* 줄을 눌러도 지도로 가지만, 처음부터 지도로 들어가는 문도 하나 열어둔다 */
+.al__mapbtn {
+  flex: none;
+  font-size: var(--label-size);
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 5px var(--gap-sm);
+  margin-bottom: var(--gap-lg);
+  white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.al__mapbtn:active {
+  transform: scale(0.96);
+}
+
+.al {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.al__row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  border-bottom: 1px solid var(--grid);
+  transition: opacity var(--dur-fast) var(--ease);
+}
+
+.al__row:first-child {
+  border-top: 1px solid var(--grid);
+}
+
+/* 다녀온 곳은 지우지 않고 물러나게만 한다 — 목록에서 사라지면 번호가 흔들린다 */
+.al__row--on {
+  opacity: 0.55;
+}
+
+.al__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  text-align: left;
+  padding: var(--gap-sm) 0;
+}
+
+.al__main:active {
+  opacity: 0.6;
+}
+
+/* 목록 번호 = 지도 핀 번호 */
+.al__no {
+  flex: none;
+  width: 2.2em;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.al__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+}
+
+.al__body .value {
+  font-size: 16px;
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.al__sub {
+  display: block;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--sub);
+}
+
+/* 겹쳐 쌓인 얼굴들. 여러 명이 고른 곳은 세지 않아도 두껍게 보인다 */
+.al__faces {
+  flex: none;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+}
+
+/* 손그림은 전신이라 원 안에 가둬 잘라내면 티셔츠만 남는다.
+ * 테두리만 원으로 두르고 그림은 통째로 넣는다. */
+.al__face {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--sage-deep);
+  object-fit: contain;
+  padding: 2px;
+}
+
+.al__face + .al__face {
+  margin-left: -10px;
+}
+
+.al__more {
+  font-size: 10px;
+  color: var(--sub);
+  margin-left: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 목록 안의 체크는 상자만 남긴다. 스물다섯 줄에 '다녀왔어요'가 스물다섯 번 붙으면 시끄럽다 */
+.chk--bare {
+  flex: none;
+  padding: var(--gap-sm) 2px var(--gap-sm) var(--gap-sm);
+}
+
+/* 추천인 목록 맨 아래에서 전체 목록으로 들어가는 자리 */
+.allcta {
+  width: 100%;
+  display: block;
+  text-align: left;
+  margin-top: var(--gap-lg);
+  background: var(--card);
+  border: 1px dashed var(--sage-deep);
+  border-radius: var(--radius);
+  padding: var(--gap-md);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.allcta:active {
+  transform: scale(0.985);
+}

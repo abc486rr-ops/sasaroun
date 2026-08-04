@@ -95,12 +95,36 @@ function collectCurators(list, placeIds, warn) {
   }, [])
 }
 
+/** placeId → 이 곳을 추천한 사람들.
+ *  추천 수는 데이터에 적지 않고 여기서 센다 — 적어두면 사람이 장소를 옮길 때 어긋난다.
+ *  검증을 통과한 추천인만 넣으므로, 없는 장소를 가리키던 참조는 여기에 남지 않는다. */
+export function creditsOf(curators) {
+  const byPlace = new Map()
+  curators.forEach((c) =>
+    c.places.forEach(({ id }) => byPlace.set(id, [...(byPlace.get(id) ?? []), c]))
+  )
+  return byPlace
+}
+
+/* 전체 목록의 순서: 여러 명이 고른 곳이 먼저다. 겹친다는 것 자체가 추천이기 때문이다.
+ * 수가 같으면 최신순, 그것도 같으면 이름순 — 새로고침마다 순서가 흔들리면
+ * "몇 번째 줄" 이라는 말이 통하지 않는다. */
+export function rankAll(places, credits) {
+  const votes = (p) => credits.get(p.id)?.length ?? 0
+  return [...places].sort(
+    (a, b) =>
+      votes(b) - votes(a) ||
+      String(b.added ?? '').localeCompare(String(a.added ?? '')) ||
+      String(a.name).localeCompare(String(b.name), 'ko')
+  )
+}
+
 export function validate(raw) {
   const warnings = []
   const warn = (m) => warnings.push(m)
 
   if (!raw || typeof raw !== 'object') {
-    return { places: [], curators: [], warnings }
+    return { places: [], curators: [], warnings, credits: new Map() }
   }
   if (!Array.isArray(raw.places)) warn('places 배열이 없습니다')
   if (!Array.isArray(raw.curators)) warn('curators 배열이 없습니다')
@@ -118,7 +142,7 @@ export function validate(raw) {
     warn(`좌표 없는 장소 ${unlocated.length}곳: ${unlocated.map((p) => p.name).join(', ')}`)
   }
 
-  return { places, curators, warnings, meta: raw.meta ?? null }
+  return { places, curators, warnings, credits: creditsOf(curators), meta: raw.meta ?? null }
 }
 
 export async function load({ url, fetchImpl = fetch, retries = 1 }) {
