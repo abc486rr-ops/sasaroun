@@ -2,8 +2,77 @@
   "meta": {
     "title": "사사로운이 추천하는 대구",
     "updated": "2026-08-04",
-    "note_for_editor": "one_liner는 초안입니다. note는 사사로운이 직접 채워야 합니다. hours·walk·link·photo는 확인 후 채우세요."
+    "todo": [
+      "팀 추천인 3명의 이름·특징·추천 장소를 채울 것 (places가 비면 목록에 뜨지 않음)",
+      "각 장소의 note(추천 이유)는 추천인 본인의 말로 채울 것",
+      "낭만젊음사랑 one_liner 미작성",
+      "art 파일 배정은 Phase 6에서 눈으로 보고 확정할 것",
+      "hours·walk·link·photo 확인 후 입력"
+    ]
   },
+
+  "curators": [
+    {
+      "id": "parksajang",
+      "name": "박사장",
+      "kind": "team",
+      "tagline": "조용하지만 감성적인 곳",
+      "traits": ["30대 후반", "INTJ"],
+      "intro": "(추천인 소개 1~2문장)",
+      "art": "art-057-138x189.png",
+      "places": [
+        "sasaroun",
+        "nangman",
+        "yurak",
+        "kawa-archive",
+        "neuel",
+        "ecc",
+        "dicapri-m1955"
+      ]
+    },
+    {
+      "id": "team-2",
+      "name": "(팀원 2 이름)",
+      "kind": "team",
+      "tagline": "(한 줄 특징)",
+      "traits": [],
+      "intro": "",
+      "art": null,
+      "places": []
+    },
+    {
+      "id": "team-3",
+      "name": "(팀원 3 이름)",
+      "kind": "team",
+      "tagline": "(한 줄 특징)",
+      "traits": [],
+      "intro": "",
+      "art": null,
+      "places": []
+    },
+    {
+      "id": "team-4",
+      "name": "(팀원 4 이름)",
+      "kind": "team",
+      "tagline": "(한 줄 특징)",
+      "traits": [],
+      "intro": "",
+      "art": null,
+      "places": []
+    },
+    {
+      "id": "guest-2026-08",
+      "name": "(이번 달 손님)",
+      "kind": "special",
+      "month": "2026-08",
+      "tagline": "(한 줄 특징)",
+      "traits": [],
+      "intro": "여행갈피에 남겨주신 기록에서",
+      "art": null,
+      "places": []
+    }
+  ],
+
   "places": [
     {
       "id": "sasaroun",
@@ -12,7 +81,7 @@
       "lat": 35.8691796664691,
       "lng": 128.587457813162,
       "one_liner": "의미를 전하는 소품샵",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -25,8 +94,8 @@
       "sector": "카페",
       "lat": 35.8698680684602,
       "lng": 128.599931990547,
-      "one_liner": "(한 줄 소개 초안 필요)",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "one_liner": "(한 줄 소개 필요)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -40,7 +109,7 @@
       "lat": 35.8731268038228,
       "lng": 128.607293212309,
       "one_liner": "카페처럼도 독립서점처럼도 보이는 프로젝트 공간",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -54,7 +123,7 @@
       "lat": 35.8741020193196,
       "lng": 128.591465668006,
       "one_liner": "일러스트레이터 카와의 굿즈와 여러 작가의 소품을 모은 곳",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -68,7 +137,7 @@
       "lat": 35.8605649210964,
       "lng": 128.598362976023,
       "one_liner": "계절이 담긴 한 상을 차려내는 반상 식당",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -82,7 +151,7 @@
       "lat": 35.8721806522866,
       "lng": 128.591067402461,
       "one_liner": "누구와도 무엇과도 어울리는 커피",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
@@ -96,7 +165,7 @@
       "lat": 35.8748272888384,
       "lng": 128.591715016348,
       "one_liner": "과정을 기록하는 브랜드가 내리는 커피",
-      "note": "(사사로운이 추천하는 이유를 2~3문장으로)",
+      "note": "(추천 이유를 2~3문장으로)",
       "photo": null,
       "hours": null,
       "walk": null,
