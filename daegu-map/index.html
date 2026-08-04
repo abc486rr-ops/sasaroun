@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사사로운이 추천하는 대구</title>
+<meta name="description" content="사사로운의 사람들이 고른 대구의 장소들. 추천인을 고르고, 카드를 넘기고, 다녀온 곳을 체크하세요.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="사사로운이 추천하는 대구">
+<meta property="og:description" content="사사로운의 사람들이 고른 대구의 장소들.">
+<meta property="og:image" content="og.png">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/curators.css">
+<link rel="stylesheet" href="css/deck.css">
+<link rel="stylesheet" href="css/map.css">
+</head>
+<body data-depth="boot">
+
+<div class="shell">
+
+  <header class="hd">
+    <button id="back" class="hd__back" type="button" aria-label="뒤로 가기" hidden>&larr;</button>
+    <div class="hd__title">
+      <span class="hd__eng">TRAVEL note</span>
+      <span class="hd__kor" id="hd-sub">by. 사사로운 · 대구</span>
+    </div>
+    <div class="hd__count" id="hd-count" aria-live="polite"></div>
+  </header>
+
+  <main id="stage">
+
+    <section id="scr-curators" class="scr" aria-label="추천인 목록">
+      <p class="scr__lead">
+        <span class="label">who recommends</span>
+        <span class="value">누구의 대구를 볼까요</span>
+      </p>
+      <ul id="curator-list" class="curators"></ul>
+      <section id="past-wrap" class="past" hidden>
+        <button id="past-toggle" class="past__toggle" type="button" aria-expanded="false">
+          지난 달의 손님들
+        </button>
+        <ul id="past-list" class="curators" hidden></ul>
+      </section>
+    </section>
+
+    <section id="scr-deck" class="scr" aria-label="추천 장소" hidden>
+      <div id="deck" class="deck"></div>
+      <ol id="dots" class="dots" aria-label="카드 위치"></ol>
+    </section>
+
+  </main>
+</div>
+
+<!-- 지도는 3D 변환 컨텍스트 바깥에 둔다.
+     transform 걸린 부모 안에서 Leaflet 은 타일 좌표와 터치가 어긋난다. -->
+<div id="map-layer" class="map-layer" hidden>
+  <div id="map" class="map"></div>
+  <div id="map-fallback" class="map-fallback" hidden></div>
+  <div id="place-card" class="pcard"></div>
+</div>
+
+<div id="boot" class="boot">
+  <p class="boot__msg">불러오는 중</p>
+</div>
+
+<div id="fatal" class="boot" hidden>
+  <p class="boot__msg" id="fatal-msg"></p>
+  <button id="fatal-retry" class="boot__retry" type="button">다시 시도</button>
+</div>
+
+<script src="vendor/leaflet.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

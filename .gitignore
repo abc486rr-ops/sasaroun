@@ -7,3 +7,11 @@ prompt_plan.md
 
 # Original (unoptimized) photos — keep local only, don't publish
 photos/original/
+
+# Print assets (local only, not part of the site)
+qr-sasaroun.png
+qr.svg
+poster.html
+
+# 개발 서버 설정 (로컬 전용)
+.claude/launch.json

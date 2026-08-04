@@ -1,0 +1,16 @@
+/* 지도 레이어 — Phase 5 */
+
+.map-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+}
+
+.map-layer[hidden] {
+  display: none;
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+}

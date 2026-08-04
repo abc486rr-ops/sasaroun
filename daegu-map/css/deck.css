@@ -1,0 +1,14 @@
+/* 카드 덱 — Phase 4 */
+
+.deck {
+  min-height: 40vh;
+}
+
+.dots {
+  list-style: none;
+  margin: var(--gap-lg) 0 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: var(--gap-xs);
+}

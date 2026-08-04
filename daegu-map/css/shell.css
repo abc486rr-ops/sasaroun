@@ -1,0 +1,118 @@
+/* 껍데기 — 헤더, 화면 전환, 부팅/오류 화면 */
+
+.shell {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 여행갈피의 세이지 그린 머리띠 */
+.hd {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  padding: var(--gap-sm) var(--gap-md);
+  padding-top: max(var(--gap-sm), env(safe-area-inset-top));
+  background: var(--sage);
+  border-bottom: 1px solid var(--sage-deep);
+}
+
+.hd__back {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  line-height: 1;
+  font-size: 15px;
+}
+
+.hd__title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hd__eng {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.hd__kor {
+  display: block;
+  font-size: 12px;
+  color: var(--sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hd__count {
+  flex: none;
+  font-size: 12px;
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+}
+
+#stage {
+  flex: 1 1 auto;
+  position: relative;
+}
+
+.scr {
+  padding: var(--gap-lg) var(--gap-md) var(--gap-xl);
+  animation: rise var(--dur) var(--ease) both;
+}
+
+.scr[hidden] {
+  display: none;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.scr__lead {
+  margin: 0 0 var(--gap-lg);
+}
+
+/* 부팅 / 치명적 오류 */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-md);
+  background: var(--paper);
+  text-align: center;
+  padding: var(--gap-lg);
+}
+
+.boot[hidden] {
+  display: none;
+}
+
+.boot__msg {
+  margin: 0;
+  color: var(--sub);
+  font-size: var(--label-size);
+  max-width: 30ch;
+}
+
+.boot__retry {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: var(--gap-xs) var(--gap-md);
+  background: var(--card);
+}
