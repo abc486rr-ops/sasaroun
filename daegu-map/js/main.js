@@ -3,6 +3,7 @@
 import { load } from './data.js'
 import { createMachine, CURATORS, DECK } from './state.js'
 import { createVisited } from './visited.js'
+import { createDeck } from './deck.js'
 import * as curatorView from './curators.js'
 
 const $ = (id) => document.getElementById(id)
@@ -21,7 +22,9 @@ const dom = {
   list: $('curator-list'),
   pastWrap: $('past-wrap'),
   pastList: $('past-list'),
-  pastToggle: $('past-toggle')
+  pastToggle: $('past-toggle'),
+  deckTrack: $('deck'),
+  dots: $('dots')
 }
 
 const SCREENS = [dom.curators, dom.deck]
@@ -52,8 +55,17 @@ const depthFromHash = () => {
   return Math.min(parts.length, 2)
 }
 
+/* 덱은 최신순으로 보여준다 — 이벤트로 매달 쌓이는 구조라
+ * 새로 들어온 곳이 먼저 눈에 띄어야 한다. */
+const byNewest = (a, b) => String(b.added ?? '').localeCompare(String(a.added ?? ''))
+
 function boot(data) {
   const visited = createVisited()
+  const byId = new Map(data.places.map((p) => [p.id, p]))
+  const totalCount = () => {
+    dom.count.textContent = `${visited.count()} / ${data.places.length}`
+  }
+
   const machine = createMachine({
     onTransition: (from, to, ctx) => {
       showDepth(to, ctx)
@@ -67,9 +79,24 @@ function boot(data) {
   history.replaceState({ depth: CURATORS }, '', urlFor(CURATORS))
   addEventListener('popstate', (e) => machine.pop(e.state?.depth ?? depthFromHash()))
 
+  const deck = createDeck({
+    trackHost: dom.deckTrack,
+    dotsHost: dom.dots,
+    visited,
+    onToggle: totalCount,
+    onOpen: (place) => {
+      // Phase 5 에서 지도로 내려간다. 지금은 자리만 잡아둔다.
+      console.info('[daegu-map] open', place.name)
+    }
+  })
+
   dom.back.addEventListener('click', () => history.back())
   addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && machine.depth !== CURATORS) history.back()
+    if (e.key === 'Escape' && machine.depth !== CURATORS) {
+      history.back()
+      return
+    }
+    if (machine.depth === DECK && deck.handleKey(e.key)) e.preventDefault()
   })
 
   dom.pastToggle.addEventListener('click', () => {
@@ -86,12 +113,14 @@ function boot(data) {
     thisMonth: new Date().toISOString().slice(0, 7),
     countVisited: (c) => visited.count(c.places),
     onPick: (c) => {
+      const list = c.places.map((id) => byId.get(id)).filter(Boolean).sort(byNewest)
+      deck.setPlaces(list)
       if (!machine.request(DECK, { curator: c })) return
       history.pushState({ depth: DECK }, '', urlFor(DECK, { curator: c }))
     }
   })
 
-  dom.count.textContent = `${visited.count()} / ${data.places.length}`
+  totalCount()
   showDepth(CURATORS)
   dom.boot.hidden = true
 

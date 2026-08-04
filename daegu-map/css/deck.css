@@ -1,7 +1,135 @@
-/* 카드 덱 — Phase 4 */
+/* 카드 덱 — 여행갈피 한 장을 화면 폭으로 편 모양 */
 
 .deck {
-  min-height: 40vh;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+
+.deck:active {
+  cursor: grabbing;
+}
+
+.deck__track {
+  display: flex;
+  will-change: transform;
+}
+
+.pc {
+  flex: 0 0 100%;
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  background: var(--card);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: var(--gap-lg) var(--gap-md);
+  min-height: 62vh;
+}
+
+/* 여행갈피의 'DT - AT' 자리 — 몇 번째 장인지 */
+.pc__no {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+}
+
+.pc__new {
+  background: var(--sage);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0 7px;
+  letter-spacing: 0.04em;
+}
+
+.pc__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pc__head .value {
+  font-size: 24px;
+  line-height: 1.35;
+}
+
+.pc__sector {
+  font-size: 12px;
+  color: var(--sub);
+}
+
+.pc__body {
+  flex: 1 1 auto;
+}
+
+.pc__one {
+  margin: 0;
+  font-size: var(--body-size);
+}
+
+.pc__note {
+  margin: var(--gap-xs) 0 0;
+  color: var(--sub);
+  white-space: pre-line;
+}
+
+.pc__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  border-top: 1px solid var(--grid);
+  padding-top: var(--gap-md);
+}
+
+.pc__open {
+  font-size: 12px;
+  color: var(--sub);
+}
+
+/* 종이 여행갈피의 방문지 체크박스 */
+.chk {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  font-size: var(--label-size);
+  color: var(--sub);
+}
+
+.chk__box {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: var(--card);
+  position: relative;
+}
+
+.chk[aria-pressed="true"] {
+  color: var(--ink);
+}
+
+.chk[aria-pressed="true"] .chk__box {
+  background: var(--ink);
+}
+
+.chk[aria-pressed="true"] .chk__box::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--card);
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(42deg);
 }
 
 .dots {
@@ -9,6 +137,20 @@
   margin: var(--gap-lg) 0 0;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: var(--gap-xs);
+}
+
+.dots__i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sage-deep);
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast);
+}
+
+.dots__i--on {
+  background: var(--ink);
+  transform: scale(1.45);
 }
