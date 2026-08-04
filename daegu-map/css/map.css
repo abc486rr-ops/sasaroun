@@ -1,16 +1,194 @@
-/* 지도 레이어 — Phase 5 */
+/* 지도 레이어 — 3D 변환 컨텍스트 바깥, 전체 화면 */
 
 .map-layer {
   position: fixed;
   inset: 0;
   z-index: 30;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
 }
 
 .map-layer[hidden] {
   display: none;
 }
 
+.map-layer--on {
+  opacity: 1;
+}
+
+/* z-index 를 auto 로 두면 쌓임 맥락이 생기지 않아, Leaflet 내부 패널(400~800)이
+ * 장소 카드와 같은 층에서 경쟁해 카드를 덮는다. 0 을 주어 안에 가둔다. */
 .map {
   position: absolute;
   inset: 0;
+  z-index: 0;
+  background: var(--paper);
+}
+
+/* 타일을 종이 톤으로 눌러 모눈 배경과 붙여둔다 */
+.leaflet-tile-pane {
+  filter: saturate(0.72) contrast(0.94);
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--paper);
+}
+
+.leaflet-control-attribution {
+  background: rgba(254, 254, 254, 0.82);
+  font-size: 10px;
+  color: var(--sub);
+}
+
+/* 기본 마커 이미지 대신 잉크 점 */
+.pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+}
+
+.pin--on {
+  background: var(--ink);
+  color: var(--card);
+}
+
+/* 장소 카드 — 지도 위 하단 */
+.pcard {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--ink);
+  border-bottom: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--gap-md);
+  padding-bottom: max(var(--gap-md), env(safe-area-inset-bottom));
+  transform: translateY(101%);
+  transition: transform var(--dur) var(--ease);
+}
+
+.pcard--on {
+  transform: none;
+}
+
+.pcard__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 32px;
+}
+
+.pcard__head .value {
+  font-size: 20px;
+}
+
+.pcard__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--sub);
+}
+
+.pcard__body {
+  margin-top: var(--gap-sm);
+}
+
+.pcard__one {
+  margin: 0 0 var(--gap-sm);
+  font-size: var(--body-size);
+}
+
+.pcard__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  padding: 3px 0;
+}
+
+.pcard__val {
+  font-size: var(--label-size);
+  color: var(--ink);
+}
+
+.pcard__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  margin-top: var(--gap-md);
+  border-top: 1px solid var(--grid);
+  padding-top: var(--gap-md);
+}
+
+.pcard__go,
+.pcard__link {
+  font-size: var(--label-size);
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--sage-deep);
+}
+
+.pcard__links {
+  margin-top: var(--gap-sm);
+  display: flex;
+  gap: var(--gap-md);
+}
+
+/* 타일이 죽었을 때 */
+.map-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gap-lg);
+  background: var(--paper);
+}
+
+.map-fallback[hidden] {
+  display: none;
+}
+
+.fb__box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  text-align: center;
+  align-items: center;
+}
+
+.fb__coord {
+  margin: 0;
+  font-size: var(--label-size);
+  color: var(--sub);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 덱 카드가 뒤집혀 사라지는 연출 — 지도는 이 3D 바깥에서 따로 올라온다 */
+.deck--flip .deck__track {
+  transform-origin: center center;
+  transition: transform var(--dur-slow) var(--ease), opacity var(--dur-slow) var(--ease);
+  transform: perspective(1200px) rotateY(-88deg) scale(0.94);
+  opacity: 0;
 }
