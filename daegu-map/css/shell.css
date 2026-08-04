@@ -110,6 +110,20 @@
   max-width: 30ch;
 }
 
+/* 손그림 원본이 592x144 라, 표시 폭은 절반 이하로 잡아 레티나에서도 선명하게 */
+.boot__art {
+  animation: roll 1.6s var(--ease) infinite alternate;
+}
+
+@keyframes roll {
+  from { transform: translateX(-10px); }
+  to   { transform: translateX(10px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot__art { animation: none; }
+}
+
 .boot__retry {
   border: 1px solid var(--ink);
   border-radius: var(--radius);

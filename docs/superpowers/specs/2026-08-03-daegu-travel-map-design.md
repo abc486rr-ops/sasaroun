@@ -1,8 +1,9 @@
 # 사사로운이 추천하는 대구 여행 지도 — 설계
 
 - 작성일: 2026-08-03 (월)
-- 상태: 사용자 검토 대기
-- 다음 단계: `/plan`
+- 갱신: 2026-08-04 (화)
+- 상태: 구현 중 — Phase 0~7 완료, Phase 8(실기기 검증) 남음
+- 계획: `prompt_plan.md`
 
 ## 1. 목적
 
@@ -86,20 +87,12 @@ where to go          ← --sub, 작게
 daegu-map/
 ├─ index.html          마크업 + OG 태그 + 크리티컬 CSS
 ├─ data/places.json    추천인 + 장소
+├─ og.png              공유 카드 (손그림으로 합성)
 ├─ vendor/leaflet.*    자체 호스팅
-├─ img/                손그림 SVG
-├─ css/
-│  ├─ tokens.css       색·타이포 토큰
-│  ├─ deck.css         카드 덱 3D
-│  └─ map.css          지도·상세 카드
-└─ js/
-   ├─ main.js          초기화만            (~70줄)
-   ├─ data.js          로드 + 검증          (~110줄)
-   ├─ state.js         3뎁스 + history     (~130줄)
-   ├─ curators.js      추천인 목록 화면      (~120줄)
-   ├─ deck.js          카드 덱 스와이프     (~180줄)
-   ├─ map.js           Leaflet 래퍼        (~150줄)
-   └─ visited.js       방문 체크 저장       (~50줄)
+├─ img/art/            손그림 PNG 18컷
+├─ css/                tokens · shell · curators · deck · map
+├─ js/                 main · data · state · curators · deck · map · card · visited
+└─ test/               data · state · state-timers · visited
 ```
 
 원본은 1,122줄 단일 파일이었다. 각 모듈 200줄 이하로 나눈다.
@@ -169,9 +162,11 @@ Three.js·troika·webgl-sdf-generator·bidi-js를 모두 걷어낸 결과, WebGL
 
 원본은 WebGL 캔버스를 `opacity: 0`으로 내려 아래 지도를 드러낸다.
 
-우리는 카드가 `rotateY(180deg)`로 뒤집히고 **뒷면이 지도 컨테이너**다. `transform-style: preserve-3d` + `backface-visibility: hidden`으로 구현한다. 발상은 같고 WebGL은 없다.
+우리는 **카드만 `rotateY`로 뒤집혀 사라지고, 그 아래에서 전체 화면 지도가 올라온다.** 지도는 3D 변환 컨텍스트 바깥의 독립 레이어다. 발상은 같고 WebGL은 없다.
 
-뒤집기가 끝나면 Leaflet의 `invalidateSize()`를 호출해 타일을 다시 계산한다. 숨겨진 요소에서 초기화된 지도는 크기를 잘못 잡는다.
+지도가 드러난 뒤 Leaflet의 `invalidateSize()`를 호출해 타일을 다시 계산한다. 숨겨진 요소에서 초기화된 지도는 크기를 잘못 잡는다.
+
+애초에는 카드 뒷면을 지도 컨테이너로 삼으려 했다. 아래 스파이크 결과가 그 판단을 바꿨다.
 
 ### 스파이크 결과 (2026-08-04)
 
@@ -193,7 +188,7 @@ Three.js·troika·webgl-sdf-generator·bidi-js를 모두 걷어낸 결과, WebGL
 
 여행 지도에서 지도는 넓어야 한다. 카드는 뒤집혀 사라지고, 그 아래에서 전체 화면 지도가 드러난다. 보이는 결과는 "카드가 뒤집혀 지도가 되었다"로 같다.
 
-`spike-3d-map.html` 은 **배포 전에 제거한다.**
+`spike-3d-map.html` 은 목적을 다해 제거했다(커밋 `44c9853` 이후).
 
 ## 9. 데이터
 
@@ -294,7 +289,9 @@ Three.js·troika·webgl-sdf-generator·bidi-js를 모두 걷어낸 결과, WebGL
 ## 12. 공유
 
 - OG 태그: `og:title` `og:description` `og:image` + `twitter:card`
-- `og:image`는 여행갈피 톤의 1200×630 이미지 1장
+- `og:image`는 **완성됨** — `og.png` 1200×630. 추출한 손글씨 `TRAVEL` `note` 와 배낭 멘 사람·기차·사다리를 모눈 배경 위에 합성했다. 폰트 렌더링 없이 제품의 손글씨를 그대로 쓴다
+
+**배포 시 할 일:** `og:image` 를 절대 URL로 바꿔야 한다. 카카오톡 등 일부 크롤러는 상대 경로를 해석하지 못한다.
 
 ### 제약 — 장소별 OG 미리보기는 불가
 
