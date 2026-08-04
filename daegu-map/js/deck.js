@@ -31,11 +31,13 @@ function cardEl(place, i, total, { visited, onOpen, onToggle, today }) {
   head.append(no, el('span', 'label', 'where to go'), el('span', 'value', place.name))
   if (place.sector) head.append(el('span', 'pc__sector', place.sector))
 
+  /* 카드에는 이 추천인의 말만 싣는다.
+   * 장소의 중립 소개(one_liner)를 함께 띄우면 남이 쓴 문장이 자기 카드에 붙은 것처럼
+   * 보이고, 두 문장이 겹치면 같은 말이 두 번 나온다.
+   * 한 줄 평이 없는 곳에서만 소개로 자리를 메운다. */
   const body = el('div', 'pc__body')
-  body.append(el('p', 'pc__one', place.one_liner))
-  body.append(el('hr', 'rule'))
   body.append(el('span', 'label', 'why we recommend'))
-  body.append(el('p', 'pc__note', place.note || ''))
+  body.append(el('p', 'pc__note', place.note || place.one_liner || ''))
 
   const foot = el('footer', 'pc__foot')
   const chk = el('button', 'chk')
@@ -71,6 +73,12 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
   trackHost.replaceChildren(track)
 
   const paint = (animate = true) => {
+    /* 폭을 그릴 때마다 다시 잰다.
+     * setPlaces 는 덱 화면이 아직 hidden 인 동안 호출되므로 그때의 clientWidth 는 0 이다.
+     * 그 값을 캐시해두면 카드가 폭 1px 만큼만 움직인다 — 드래그는 누를 때 다시 재서
+     * 멀쩡해 보이지만 키보드로는 영영 넘어가지 않는다. */
+    const w = trackHost.clientWidth
+    if (w) width = w
     track.style.transition = animate ? 'transform var(--dur) var(--ease)' : 'none'
     track.style.transform = `translate3d(${-index * width + dx}px,0,0)`
     ;[...dotsHost.children].forEach((d, i) =>

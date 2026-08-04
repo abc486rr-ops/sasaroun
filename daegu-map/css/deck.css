@@ -75,7 +75,8 @@
 
 .pc__note {
   margin: var(--gap-xs) 0 0;
-  color: var(--sub);
+  font-size: var(--body-size);
+  color: var(--ink);
   white-space: pre-line;
 }
 
