@@ -35,7 +35,11 @@ function card(c, { visitedCount, onPick }) {
     const img = el('img', 'art')
     img.src = ART_DIR + c.art
     img.alt = ''
-    img.loading = 'lazy'
+    // 지연 로딩을 걸지 않는다. 이 그림들은 첫 화면의 본문이지 부수 이미지가 아니다.
+    // lazy 로 두면 뷰포트 교차 판정에 걸려 끝내 안 뜨는 경우가 생긴다(배포본에서 확인).
+    img.decoding = 'async'
+    img.width = 56
+    img.height = 56
     art.append(img)
   }
 
