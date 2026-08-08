@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "사사로운이 추천하는 대구",
-    "updated": "2026-08-04",
+    "updated": "2026-08-08",
     "notes": [
       "note(한 줄 평)는 장소가 아니라 추천인의 places 안에 붙는다. 같은 곳도 사람마다 다르게 말한다.",
       "map_query 는 네이버지도 검색어다. 등록 상호가 우리 표기와 다를 때만 넣는다.",
@@ -11,7 +11,6 @@
       "geo_precision: building=네이버 클라우드 지오코딩으로 도로명주소를 변환한 건물 좌표. archive=대백 아카이브에서 받은 좌표."
     ],
     "todo": [
-      "정토브·김먼지 한 줄 특징",
       "새로 추가된 장소들의 업종(sector) 확인 — 지금은 추정값이다",
       "hours·walk·link·photo 확인 후 입력"
     ]
@@ -64,7 +63,9 @@
       "name": "이대표",
       "kind": "team",
       "tagline": "자타 공인 빵순이",
-      "traits": [],
+      "traits": [
+        "ISFJ"
+      ],
       "intro": "",
       "art": "people/p15.png",
       "places": [
@@ -102,8 +103,10 @@
       "id": "jeongtobe",
       "name": "정토브",
       "kind": "team",
-      "tagline": "(한 줄 특징을 적어주세요)",
-      "traits": [],
+      "tagline": "새로운 메뉴 도전🔥",
+      "traits": [
+        "ISFP"
+      ],
       "intro": "",
       "art": "people/p16.png",
       "places": [
@@ -145,14 +148,16 @@
       "id": "kimmunji",
       "name": "김먼지",
       "kind": "team",
-      "tagline": "(한 줄 특징을 적어주세요)",
-      "traits": [],
+      "tagline": "작은 규모에 내공이 엿보이는 공간을 좋아함",
+      "traits": [
+        "ISTP"
+      ],
       "intro": "",
       "art": "people/p14.png",
       "places": [
         {
-          "id": "seongbo",
-          "note": "고소하고 진해, 여름 필수!"
+          "id": "berlin-espresso",
+          "note": "달달한 음료 안좋아하는 사람도 눈이 번쩍 뜨이는 '베를린슈페너'. 한모금 마시면 멈출 수 없음."
         },
         {
           "id": "mulbineul",
@@ -175,12 +180,12 @@
           "note": "마음이 편안해지는 소품샵, 한시간 순삭...텅장..."
         },
         {
-          "id": "sobe",
-          "note": "속이 가득한 모찌빵"
+          "id": "yie-coffee",
+          "note": "내 마음속 카페 1등.. 스페셜티 커피를 좋아한다면 추천"
         },
         {
-          "id": "roudy-coffee",
-          "note": "디카페인 라떼가 이렇게 맛있다니..?"
+          "id": "darakbang-mandu",
+          "note": "어르신 손님으로 꽉찬 수제손만두 맛짐. 비빔만두 or 쫄면만두 추천."
         }
       ]
     },
@@ -524,21 +529,6 @@
       "geo_precision": "building"
     },
     {
-      "id": "seongbo",
-      "name": "성보 콩국수",
-      "sector": "식당",
-      "lat": 35.8345862,
-      "lng": 128.6109085,
-      "address": "대구광역시 수성구 상화로 36",
-      "one_liner": "",
-      "photo": null,
-      "hours": null,
-      "walk": null,
-      "link": null,
-      "added": "2026-08-04",
-      "geo_precision": "building"
-    },
-    {
       "id": "mirangsier",
       "name": "미랑시에",
       "sector": "베이커리",
@@ -554,18 +544,49 @@
       "geo_precision": "building"
     },
     {
-      "id": "roudy-coffee",
-      "name": "라우디커피",
+      "id": "yie-coffee",
+      "name": "이에커피로스터스",
       "sector": "카페",
-      "lat": 35.8677212,
-      "lng": 128.5923728,
-      "address": "대구광역시 중구 진골목길 6",
+      "lat": 35.8640286,
+      "lng": 128.6079638,
+      "address": "대구광역시 중구 달구벌대로447길 38",
       "one_liner": "",
       "photo": null,
       "hours": null,
       "walk": null,
       "link": null,
-      "added": "2026-08-04",
+      "added": "2026-08-08",
+      "geo_precision": "building"
+    },
+    {
+      "id": "berlin-espresso",
+      "name": "베를린 에스프레소 바",
+      "sector": "카페",
+      "lat": 35.8373481,
+      "lng": 128.6042092,
+      "address": "대구광역시 남구 대덕로40길 83",
+      "map_query": "베를린 에스프레소 바 봉덕",
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-08",
+      "geo_precision": "building"
+    },
+    {
+      "id": "darakbang-mandu",
+      "name": "다락방만두",
+      "sector": "식당",
+      "lat": 35.8729412,
+      "lng": 128.5926798,
+      "address": "대구광역시 중구 경상감영1길 43",
+      "one_liner": "",
+      "photo": null,
+      "hours": null,
+      "walk": null,
+      "link": null,
+      "added": "2026-08-08",
       "geo_precision": "building"
     }
   ]
