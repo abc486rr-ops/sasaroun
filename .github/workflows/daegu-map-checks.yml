@@ -30,4 +30,10 @@ jobs:
             if curl --fail --silent http://127.0.0.1:8765/daegu-map/ > /dev/null; then break; fi
             sleep 1
           done
-          npm --prefix daegu-map run test:e2e
+          SCREENSHOT_DIR=/tmp/daegu-map-screenshots npm --prefix daegu-map run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: daegu-map-screenshots
+          path: /tmp/daegu-map-screenshots
+          if-no-files-found: ignore

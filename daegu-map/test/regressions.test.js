@@ -22,3 +22,17 @@ test('localStorage 속성 접근이 거부되어도 메모리로 동작한다', 
     else delete globalThis.localStorage
   }
 })
+
+test('URL 복원은 진행 중 전환과 타임아웃을 취소한다', async () => {
+  const { createMachine } = await import('../js/state.js')
+  const callbacks = new Map()
+  let id = 0
+  const machine = createMachine({ timers: { set(fn) { callbacks.set(++id, fn); return id }, clear(id) { callbacks.delete(id) } } })
+  machine.request(2, { place: 'old' })
+  machine.restore(1, { curator: 'new' })
+  assert.equal(machine.depth, 1)
+  assert.equal(machine.ctx.curator, 'new')
+  assert.equal(callbacks.size, 0)
+  machine.settle()
+  assert.equal(machine.depth, 1)
+})

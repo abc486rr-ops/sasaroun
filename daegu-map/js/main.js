@@ -136,6 +136,7 @@ function boot(data) {
   function enterMap(place) {
     mapToken += 1
     mapAll = !place
+    dived?.classList.remove('scr--dive')
     dived = view.all ? dom.allScr : dom.deckScr
     dived.classList.add('scr--dive')
     // 핀이 많으면 이름표끼리 겹쳐 글씨가 뭉갠다. 그때는 번호만 남긴다.
@@ -153,6 +154,7 @@ function boot(data) {
       return
     }
     // 아직 고른 곳이 없다. 전부 들어오게 맞춰 보여준다.
+    hidePlaceCard(dom.pcard)
     map.setCurrent(null)
     map.fitAll(shown, { top: dom.hd.offsetHeight + 24 })
     if (map.broken) renderMapFallback(null)

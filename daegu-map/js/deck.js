@@ -134,8 +134,14 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
 
   trackHost.addEventListener('pointerdown', onDown)
   trackHost.addEventListener('pointermove', onMove)
-  trackHost.addEventListener('pointerup', onUp)
-  trackHost.addEventListener('pointercancel', onUp)
+  addEventListener('pointerup', onUp)
+  addEventListener('pointercancel', onUp)
+  trackHost.addEventListener('lostpointercapture', () => {
+    if (!dragging) return
+    dragging = false
+    pointerId = null
+    goTo(index)
+  })
   // 드래그 끝의 클릭이 카드 열기로 이어지지 않게 한다
   trackHost.addEventListener('click', (e) => {
     if (suppressClick && e.detail !== 0) {
