@@ -13,10 +13,12 @@ async function pageFor(t, hash = '', setup) {
     if (process.env.SCREENSHOT_DIR) {
       const { mkdir } = await import('node:fs/promises')
       await mkdir(process.env.SCREENSHOT_DIR, { recursive: true })
-      await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/${t.name.replace(/[^\p{L}\p{N}]+/gu, '-')}.png`, fullPage: true }).catch(() => {})
+      await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/${t.name.replace(/[^\p{L}\p{N}]+/gu, '-')}.png`, fullPage: false }).catch(() => {})
     }
     await context.close()
   })
+  // 회귀 테스트는 타일 서버에 반복 요청하지 않는다. 오류 테스트가 이 경로를 덮어쓴다.
+  await page.route('https://tile.openstreetmap.org/**', r => r.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#f9f9f6"/></svg>' }))
   await setup?.(page)
   await page.goto(base + hash)
   await page.locator('#boot').waitFor({ state: 'hidden' })
@@ -64,7 +66,7 @@ test('스와이프는 카드만 넘기고 다음 정상 탭은 지도를 연다'
 test('전체 지도 타일 실패 안내와 재시도', async t => {
   let fail = true
   const p = await pageFor(t, '#/all/map', async p => {
-    await p.route('**/light_all/**', r => fail ? r.abort() : r.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#f9f9f6"/></svg>' }))
+    await p.route('https://tile.openstreetmap.org/**', r => fail ? r.abort() : r.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="#f9f9f6"/></svg>' }))
   })
   await p.locator('#map-fallback').waitFor({ state: 'visible' })
   assert.match(await p.locator('#map-fallback').innerText(), /지도를 불러오지 못했습니다/)
@@ -83,7 +85,7 @@ test('좌표 없는 장소도 지도 실패 시 안내가 보인다', async t =>
       data.places.find(p => p.id === 'sasaroun').lng = null
       await r.fulfill({ json: data })
     })
-    await p.route('**/light_all/**', r => r.abort())
+    await p.route('https://tile.openstreetmap.org/**', r => r.abort())
   })
   await p.locator('#map-fallback').waitFor({ state: 'visible' })
   assert.match(await p.locator('#map-fallback').innerText(), /위치 확인 중/)

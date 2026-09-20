@@ -5,6 +5,7 @@
   position: fixed;
   inset: 0;
   z-index: 30;
+  overflow: hidden;
   opacity: 0;
   transition: opacity var(--dur) var(--ease);
 }
@@ -298,4 +299,12 @@
 
 .map-layer--dense .pin--cur ~ .pin-name {
   display: block;
+}
+
+/* 장소 카드가 떠 있어도 지도 출처를 가리지 않는다. */
+.leaflet-top {
+  top: var(--map-header-height, 72px);
+}
+body[data-depth="2"] {
+  overflow: hidden;
 }

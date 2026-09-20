@@ -1,8 +1,8 @@
 /* Leaflet 래퍼. 3D 변환 컨텍스트 바깥에서 전체 화면으로 뜬다.
  * 지도 라이브러리를 직접 쓰는 곳은 여기 하나뿐이다 — 나중에 갈아끼우기 쉽도록. */
 
-const TILE = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+const TILE = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 const ZOOM = 16
 
 const esc = (s) =>
@@ -54,6 +54,7 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
       // 카드가 화면 아래를 가리므로 탭 여유를 준다
       tap: true
     })
+    map.attributionControl.setPosition('topright')
     tiles = L.tileLayer(TILE, { attribution: ATTR, maxZoom: 19 })
       .on('loading', () => { failed = 0; loaded = 0 })
       .on('tileerror', () => { failed += 1 })
@@ -94,6 +95,11 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
             })
               .addTo(m)
               .on('click', () => onPick?.(p))
+              .on('keydown', (event) => {
+                if (!['Enter', ' '].includes(event.originalEvent.key)) return
+                L.DomEvent.stop(event.originalEvent)
+                onPick?.(p)
+              })
             return [p.id, mk]
           })
       )

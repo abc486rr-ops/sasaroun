@@ -147,6 +147,7 @@ function boot(data) {
     // 지도가 투명한 채로 남는 상태가 만들어진다.
     void dom.mapLayer.offsetWidth
     dom.mapLayer.classList.add('map-layer--on')
+    dom.mapEl.style.setProperty('--map-header-height', `${dom.hd.offsetHeight}px`)
     map.setPlaces(shown, { visited })
     map.refresh()
     if (place) {
