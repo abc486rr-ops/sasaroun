@@ -71,6 +71,7 @@ function boot(data) {
     renderCurators()
   }
 
+  let activePlace = null
   const map = createMap({
     el: dom.mapEl,
     fallbackEl: dom.mapFallback,
@@ -80,7 +81,7 @@ function boot(data) {
     }
   })
 
-  function renderMapFallback(place = machine.ctx?.place) {
+  function renderMapFallback(place = activePlace) {
     renderFallback({ host: dom.mapFallback, place, onRetry: () => map.retry() })
   }
 
@@ -96,6 +97,7 @@ function boot(data) {
 
   /** 지도 위 카드를 지금 장소로 맞춘다. 진입할 때도, 다른 핀을 눌렀을 때도 여기를 지난다. */
   function showCard(place, { animate = true } = {}) {
+    activePlace = place
     map.setCurrent(place.id)
     if (map.broken) renderMapFallback(place)
     renderPlaceCard({
@@ -123,6 +125,7 @@ function boot(data) {
       history.back()
       return
     }
+    activePlace = null
     hidePlaceCard(dom.pcard)
     map.setCurrent(null)
     dom.mapEl.focus({ preventScroll: true })
@@ -134,6 +137,7 @@ function boot(data) {
   }
 
   function enterMap(place) {
+    activePlace = place
     mapToken += 1
     mapAll = !place
     dived?.classList.remove('scr--dive')
@@ -226,6 +230,7 @@ function boot(data) {
     if (machine.depth === MAP && machine.replaceCtx(ctx)) {
       history.replaceState({ depth: MAP, mapAll }, '', urlFor(MAP, ctx))
       showCard(place)
+      dom.pcard.querySelector('.pcard__close')?.focus({ preventScroll: true })
       return
     }
 

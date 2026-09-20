@@ -132,6 +132,9 @@ test('전체 지도에서 장소 카드를 닫으면 지도에 머문다', async
   assert.equal(await p.locator('body').getAttribute('data-depth'), '2')
   assert.equal(await p.locator('#place-card').getAttribute('inert'), '')
   assert.match(p.url(), /#\/all\/map$/)
+  await p.locator('.leaflet-marker-icon').first().press('Space')
+  await p.locator('.pcard--on').waitFor()
+  assert.equal(await p.locator('.pcard__close').evaluate(el => document.activeElement === el), true)
 })
 test('지도에서 돌아오면 보던 카드와 키보드 초점을 복원한다', async t => {
   const p = await pageFor(t, '#/parksajang')
