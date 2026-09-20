@@ -13,7 +13,7 @@ export const DAEGU_BOUNDS = Object.freeze({
 })
 
 const KINDS = Object.freeze(['team', 'special'])
-const MONTH = /^\d{4}-\d{2}$/
+const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/
 
 const isText = (v) => typeof v === 'string' && v.trim() !== ''
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v)
@@ -82,7 +82,18 @@ function collectCurators(list, placeIds, warn) {
       return acc
     }
     const refs = c.places.map(refOf)
-    const kept = refs.filter((r) => placeIds.has(r.id))
+    const used = new Set()
+    const kept = refs.filter((r) => {
+      if (!placeIds.has(r.id)) return false
+      if (used.has(r.id)) {
+        warn(`추천인 '${label}' 의 중복 참조 '${r.id}' 를 뺍니다`)
+        return false
+      }
+      used.add(r.id)
+      return true
+    }).map((r) => ({ id: r.id, note: isText(r.note) ? r.note : '' }))
+    const traits = Array.isArray(c.traits) ? c.traits.filter(isText) : []
+    if (c.traits != null && !Array.isArray(c.traits)) warn(`추천인 '${label}' 의 traits는 배열이어야 합니다`)
     refs
       .filter((r) => !placeIds.has(r.id))
       .forEach((r) => warn(`추천인 '${label}' 의 참조 '${r.id}' 는 없는 장소입니다`))
@@ -91,7 +102,7 @@ function collectCurators(list, placeIds, warn) {
       return acc
     }
     seen.add(c.id)
-    return [...acc, Object.freeze({ ...c, places: Object.freeze(kept.map(Object.freeze)) })]
+    return [...acc, Object.freeze({ ...c, traits: Object.freeze(traits), places: Object.freeze(kept.map(Object.freeze)) })]
   }, [])
 }
 
@@ -148,12 +159,16 @@ export function validate(raw) {
 export async function load({ url, fetchImpl = fetch, retries = 1 }) {
   let last = null
   for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 12000)
     try {
-      const res = await fetchImpl(url, { cache: 'no-cache' })
+      const res = await fetchImpl(url, { cache: 'no-cache', signal: controller.signal })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       return validate(await res.json())
     } catch (err) {
       last = err
+    } finally {
+      clearTimeout(timeout)
     }
   }
   throw new Error(`장소 정보를 불러오지 못했습니다 (${last?.message ?? '알 수 없는 오류'})`)

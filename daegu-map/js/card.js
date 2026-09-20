@@ -77,7 +77,7 @@ export function renderPlaceCard({ host, place, visited, onToggle, onClose, credi
   foot.append(chk, routes(place))
 
   const links = el('div', 'pcard__links')
-  if (place.link) {
+  if (typeof place.link === 'string' && /^https?:\/\//i.test(place.link)) {
     const a = el('a', 'pcard__link', '인스타그램 →')
     a.href = place.link
     a.target = '_blank'
@@ -86,18 +86,32 @@ export function renderPlaceCard({ host, place, visited, onToggle, onClose, credi
   }
 
   host.replaceChildren(head, close, body, foot, links)
+  host.inert = false
   host.classList.add('pcard--on')
 }
 
 export function hidePlaceCard(host) {
+  host.inert = true
   host.classList.remove('pcard--on')
 }
 
 /* 지도 타일이 죽었을 때 — 지도 대신 주소와 길찾기 링크만이라도 남긴다. */
-export function renderFallback({ host, place }) {
+export function renderFallback({ host, place, onRetry }) {
   const box = el('div', 'fb__box')
   box.append(el('span', 'label', 'map unavailable'), el('span', 'value', '지도를 불러오지 못했습니다'))
-  box.append(el('p', 'fb__coord', `${place.lat.toFixed(5)}N ${place.lng.toFixed(5)}E`))
-  box.append(routes(place))
+  if (place) {
+    const coord = Number.isFinite(place.lat) && Number.isFinite(place.lng)
+      ? `${place.lat.toFixed(5)}N ${place.lng.toFixed(5)}E`
+      : '위치 확인 중 — 이름으로 찾아보세요'
+    box.append(el('p', 'fb__coord', coord), routes(place))
+  } else {
+    box.append(el('p', 'fb__coord', '잠시 후 다시 시도하거나 뒤로 가서 장소를 선택하세요.'))
+  }
+  if (onRetry) {
+    const retry = el('button', 'boot__retry', '지도 다시 시도')
+    retry.type = 'button'
+    retry.addEventListener('click', onRetry)
+    box.append(retry)
+  }
   host.replaceChildren(box)
 }

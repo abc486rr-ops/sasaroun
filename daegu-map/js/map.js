@@ -2,9 +2,8 @@
  * 지도 라이브러리를 직접 쓰는 곳은 여기 하나뿐이다 — 나중에 갈아끼우기 쉽도록. */
 
 const TILE = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-const ATTR = '&copy; OpenStreetMap &copy; CARTO'
+const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
 const ZOOM = 16
-const TILE_FAIL_LIMIT = 6 // 이만큼 실패하면 지도를 포기하고 링크로 대체한다
 
 const esc = (s) =>
   String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
@@ -28,6 +27,14 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
   let visitedRef = null
   let currentId = null
   let failed = 0
+  let loaded = 0
+  let broken = false
+  let tiles = null
+  const fail = () => {
+    broken = true
+    fallbackEl.hidden = false
+    onTileFail?.()
+  }
 
   const iconFor = (place, i) =>
     pin(String(i + 1), place.name, {
@@ -40,20 +47,22 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
 
   function ensure() {
     if (map) return map
+    if (typeof L === 'undefined') { fail(); return null }
     map = L.map(el, {
       zoomControl: false,
       attributionControl: true,
       // 카드가 화면 아래를 가리므로 탭 여유를 준다
       tap: true
     })
-    L.tileLayer(TILE, { attribution: ATTR, maxZoom: 19 })
-      .on('tileerror', () => {
-        failed += 1
-        if (failed === TILE_FAIL_LIMIT) {
-          fallbackEl.hidden = false
-          onTileFail?.()
-        }
+    tiles = L.tileLayer(TILE, { attribution: ATTR, maxZoom: 19 })
+      .on('loading', () => { failed = 0; loaded = 0 })
+      .on('tileerror', () => { failed += 1 })
+      .on('tileload', () => {
+        loaded += 1
+        broken = false
+        fallbackEl.hidden = true
       })
+      .on('load', () => { if (failed > 0 && loaded === 0) fail() })
       .addTo(map)
     return map
   }
@@ -67,9 +76,10 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
     /* 좌표를 아직 못 구한 곳은 핀을 찍지 않는다.
      * 다만 번호는 덱 순서를 그대로 쓴다 — 카드의 N°003 과 지도의 3 이 같아야 한다. */
     setPlaces(places, { visited } = {}) {
-      const m = ensure()
       list = places
+      const m = ensure()
       visitedRef = visited ?? null
+      if (!m) return
       markers.forEach((mk) => mk.remove())
       markers = new Map(
         places
@@ -91,6 +101,7 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
 
     /** 지금 카드에 떠 있는 장소를 표시한다. 비슷한 자리에 번호가 몰리면 구분이 안 된다. */
     setCurrent(id) {
+      markers.get(currentId)?.setZIndexOffset(0)
       currentId = id
       repaint()
       markers.get(id)?.setZIndexOffset(1000)
@@ -103,12 +114,15 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
     /** 좌표가 없으면 대신 전체를 보여준다 — 엉뚱한 곳으로 튀는 것보다 낫다. */
     focus(place, { animate = true } = {}) {
       const m = ensure()
+      if (!m) return
       if (!place.located) {
         this.fitAll(list)
         return
       }
       // 하단 카드가 가리는 만큼 위로 올려 앉힌다
-      const offset = Math.round(Math.min(innerHeight * 0.22, 170))
+      const cardHeight = document.getElementById('place-card')?.offsetHeight ?? 0
+      const headerHeight = document.querySelector('.hd')?.offsetHeight ?? 0
+      const offset = Math.max(0, Math.round((cardHeight - headerHeight) / 2))
       m.setView([place.lat, place.lng], ZOOM, { animate: false })
       m.panBy([0, offset], { animate })
     },
@@ -118,15 +132,24 @@ export function createMap({ el, fallbackEl, onPick, onTileFail }) {
     fitAll(places, { top = 48 } = {}) {
       const pts = places.filter((p) => p.located).map((p) => [p.lat, p.lng])
       if (!pts.length) return
-      ensure().fitBounds(pts, {
+      ensure()?.fitBounds(pts, {
         paddingTopLeft: [24, top],
         paddingBottomRight: [24, 48],
         maxZoom: ZOOM
       })
     },
 
+    retry() {
+      if (typeof L === 'undefined') { location.reload(); return }
+      broken = false
+      failed = 0
+      loaded = 0
+      fallbackEl.hidden = true
+      tiles?.redraw()
+    },
+
     get broken() {
-      return failed >= TILE_FAIL_LIMIT
+      return broken
     }
   }
 }

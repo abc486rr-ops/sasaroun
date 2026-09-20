@@ -122,6 +122,8 @@
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: var(--gap-md);
   padding-bottom: max(var(--gap-md), env(safe-area-inset-bottom));
+  max-height: 65dvh;
+  overflow-y: auto;
   transform: translateY(101%);
   transition: transform var(--dur) var(--ease);
 }

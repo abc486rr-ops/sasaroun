@@ -1,6 +1,7 @@
 /* 진입점. 모듈을 엮는 일만 한다 — 화면 로직은 각 모듈이 갖는다. */
 
 import { load, rankAll } from './data.js'
+import { urlFor, resolveRoute } from './routes.js'
 import { createMachine, CURATORS, DECK, MAP } from './state.js'
 import { createVisited } from './visited.js'
 import { createDeck } from './deck.js'
@@ -51,31 +52,7 @@ const cssMs = (name) => {
  * 새로 들어온 곳이 먼저 눈에 띄어야 한다. */
 const byNewest = (a, b) => String(b.added ?? '').localeCompare(String(a.added ?? ''))
 
-/* 전체 목록도 '누구'의 자리를 차지한다 — 한 사람 대신 모두라는 뜻이다.
- * 추천인 중에 같은 이름이 생기면 링크가 겹치므로, 사람 이름으로는 쓰지 않는다. */
-const ALL_SLUG = '전체'
-
-/* 장소 없이 지도만 열었을 때의 자리. 아직 아무 카드도 안 뜬 상태다. */
-const MAP_SLUG = '지도'
-
-/* 핀이 이보다 많으면 이름표가 서로 겹친다 — 그때는 번호만 남긴다 */
 const DENSE_PINS = 12
-
-/* 해시에는 id 가 아니라 이름을 쓴다. 링크만 보고 누구의 추천인지 알 수 있어야
- * 공유에 의미가 생긴다. GitHub Pages 는 정적이라 경로 라우팅을 못 쓴다. */
-const urlFor = (depth, ctx) => {
-  if (depth === CURATORS) return './'
-  const who = encodeURIComponent(ctx?.all ? ALL_SLUG : ctx?.curator?.name ?? '')
-  if (depth === DECK) return `#/${who}`
-  return `#/${who}/${encodeURIComponent(ctx?.place?.name ?? MAP_SLUG)}`
-}
-
-const depthFromHash = () => {
-  const parts = decodeURIComponent(location.hash.replace(/^#\/?/, ''))
-    .split('/')
-    .filter(Boolean)
-  return Math.min(parts.length, MAP)
-}
 
 function boot(data) {
   const visited = createVisited()
@@ -88,7 +65,7 @@ function boot(data) {
   const ctxOf = (place) => ({ ...view, place })
 
   const refreshCount = () => {
-    dom.count.textContent = `${visited.count()} / ${data.places.length}`
+    dom.count.textContent = `${visited.count(data.places.map(p => p.id))} / ${data.places.length}`
     // 추천인 카드의 'n / m' 도 같은 체크를 센다. 여기서 같이 갱신하지 않으면
     // 목록으로 돌아왔을 때 방금 체크한 게 반영되지 않은 숫자가 남는다.
     renderCurators()
@@ -99,10 +76,13 @@ function boot(data) {
     fallbackEl: dom.mapFallback,
     onPick: (p) => openPlace(p),
     onTileFail: () => {
-      const p = machine.ctx?.place
-      if (p) renderFallback({ host: dom.mapFallback, place: p })
+      renderMapFallback()
     }
   })
+
+  function renderMapFallback(place = machine.ctx?.place) {
+    renderFallback({ host: dom.mapFallback, place, onRetry: () => map.retry() })
+  }
 
   /* 지도 레이어를 실제로 감추는 시점을 지키는 토큰.
    * 투명하기만 하면 화면을 덮은 채 덱의 터치를 가로챈다. */
@@ -117,8 +97,7 @@ function boot(data) {
   /** 지도 위 카드를 지금 장소로 맞춘다. 진입할 때도, 다른 핀을 눌렀을 때도 여기를 지난다. */
   function showCard(place, { animate = true } = {}) {
     map.setCurrent(place.id)
-    map.focus(place, { animate })
-    if (map.broken) renderFallback({ host: dom.mapFallback, place })
+    if (map.broken) renderMapFallback(place)
     renderPlaceCard({
       host: dom.pcard,
       place,
@@ -134,6 +113,7 @@ function boot(data) {
       },
       onClose: closeCard
     })
+    map.focus(place, { animate })
   }
 
   /* 덱에서 내려온 지도는 그 장소를 보러 온 것이라, 카드를 닫으면 나간다.
@@ -145,9 +125,11 @@ function boot(data) {
     }
     hidePlaceCard(dom.pcard)
     map.setCurrent(null)
+    dom.mapEl.focus({ preventScroll: true })
+    if (map.broken) renderMapFallback(null)
     const ctx = { ...view, place: null }
     if (machine.replaceCtx(ctx)) {
-      history.replaceState({ depth: MAP }, '', urlFor(MAP, ctx))
+      history.replaceState({ depth: MAP, mapAll }, '', urlFor(MAP, ctx))
     }
   }
 
@@ -173,6 +155,7 @@ function boot(data) {
     // 아직 고른 곳이 없다. 전부 들어오게 맞춰 보여준다.
     map.setCurrent(null)
     map.fitAll(shown, { top: dom.hd.offsetHeight + 24 })
+    if (map.broken) renderMapFallback(null)
   }
 
   function leaveMap() {
@@ -192,6 +175,10 @@ function boot(data) {
     dom.curators.hidden = depth !== CURATORS
     dom.deckScr.hidden = depth === CURATORS || view.all
     dom.allScr.hidden = depth === CURATORS || !view.all
+    dom.deckScr.inert = depth !== DECK || view.all
+    dom.allScr.inert = depth !== DECK || !view.all
+    dom.mapLayer.inert = depth !== MAP
+    if (!dom.deckScr.hidden) deck.goTo(deck.index, false)
     dom.body.dataset.depth = String(depth)
     dom.back.hidden = depth === CURATORS
     dom.sub.textContent =
@@ -202,6 +189,7 @@ function boot(data) {
           : `${view.curator?.name ?? ''}의 대구`
   }
 
+  let transitionTimer = null
   const machine = createMachine({
     onTransition: (from, to, ctx) => {
       paint(to)
@@ -209,7 +197,21 @@ function boot(data) {
       else if (from === MAP) leaveMap()
       // 전환 길이만큼 기다렸다 도착을 알린다. 신호가 유실돼도 상태머신의
       // 타임아웃 폴백이 잠금을 풀어준다.
-      setTimeout(() => machine.settle(), to === MAP || from === MAP ? cssMs('--dur-slow') : 0)
+      clearTimeout(transitionTimer)
+      transitionTimer = setTimeout(() => {
+        machine.settle()
+        if (machine.transiting) return
+        if (machine.depth === MAP) {
+          const focus = machine.ctx?.place ? dom.pcard.querySelector('.pcard__close') : dom.mapEl
+          focus?.focus({ preventScroll: true })
+        } else if (machine.depth === DECK) {
+          if (view.all) dom.allMap.focus({ preventScroll: true })
+          else deck.focusCurrent()
+        } else {
+          const button = view.all ? dom.allEntry : [...dom.list.querySelectorAll('button'), ...dom.pastList.querySelectorAll('button')].find(b => b.dataset.curatorId === view.curator?.id)
+          ;(button ?? dom.list.querySelector('button'))?.focus({ preventScroll: true })
+        }
+      }, to === MAP || from === MAP ? cssMs('--dur-slow') : 0)
     }
   })
 
@@ -219,13 +221,13 @@ function boot(data) {
     /* 이미 지도에 있으면 카드만 갈아끼운다.
      * pushState 를 쌓으면 핀을 누른 횟수만큼 뒤로가기를 눌러야 덱으로 나온다. */
     if (machine.depth === MAP && machine.replaceCtx(ctx)) {
-      history.replaceState({ depth: MAP }, '', urlFor(MAP, ctx))
+      history.replaceState({ depth: MAP, mapAll }, '', urlFor(MAP, ctx))
       showCard(place)
       return
     }
 
     if (!machine.request(MAP, ctx)) return
-    history.pushState({ depth: MAP }, '', urlFor(MAP, ctx))
+    history.pushState({ depth: MAP, mapAll: !ctx.place }, '', urlFor(MAP, ctx))
   }
 
   const deck = createDeck({
@@ -246,6 +248,7 @@ function boot(data) {
 
   /** 1층을 한 사람의 덱으로 채운다. */
   function setCuratorView(c) {
+    const keep = view.curator?.id === c.id ? deck.index : 0
     view = { all: false, curator: c }
     // 한 줄 평은 추천인이 갖고 있다. 장소와 합쳐 덱에 올린다.
     shown = c.places
@@ -256,6 +259,7 @@ function boot(data) {
       .filter(Boolean)
       .sort(byNewest)
     deck.setPlaces(shown)
+    deck.goTo(keep, false)
   }
 
   /** 1층을 전체 목록으로 채운다. */
@@ -278,21 +282,27 @@ function boot(data) {
     history.back()
   }
 
-  machine.onRealign((depth) =>
-    history.replaceState({ depth }, '', urlFor(depth, ctxOf(machine.ctx?.place)))
-  )
-  history.replaceState({ depth: CURATORS }, '', urlFor(CURATORS))
-  addEventListener('popstate', (e) => {
-    const to = e.state?.depth ?? depthFromHash()
-    /* 이번 popstate 에서 쓰지 못하면 버린다. 들고 있으면 한참 뒤의
-     * 엉뚱한 이동에 가서 붙는다. */
+  function restoreRoute(route) {
+    if (route.depth !== CURATORS) {
+      if (route.ctx.all) setAllView()
+      else setCuratorView(route.ctx.curator)
+      if (route.ctx.place) {
+        route.ctx.place = shown.find(p => p.id === route.ctx.place.id) ?? route.ctx.place
+        if (!view.all) deck.goTo(shown.findIndex(p => p.id === route.ctx.place.id), false)
+      }
+    }
+    machine.restore(route.depth, route.ctx)
+    if (route.depth === MAP) mapAll = history.state?.mapAll ?? !route.ctx.place
+  }
+  addEventListener('popstate', () => {
+    const route = resolveRoute(location.hash, data)
     const c = pending
     pending = null
-    machine.pop(to)
-    if (to !== DECK || !c) return
-    setCuratorView(c)
-    paint(DECK) // 전환은 이미 시작됐다. 내용만 그 사람 것으로 바꿔 끼운다.
-    history.replaceState({ depth: DECK }, '', urlFor(DECK, { curator: c }))
+    if (route.depth === DECK && c) {
+      route.ctx = { all: false, curator: c, place: null }
+      history.replaceState({ depth: DECK }, '', urlFor(DECK, route.ctx))
+    }
+    restoreRoute(route)
   })
 
   dom.back.addEventListener('click', () => history.back())
@@ -302,7 +312,9 @@ function boot(data) {
       return
     }
     // 전체 목록은 세로로 훑는 화면이라 좌우 키를 가로채면 안 된다
-    if (machine.depth === DECK && !view.all && deck.handleKey(e.key)) e.preventDefault()
+    if (e.target.closest?.('input, select, textarea, [contenteditable]')) return
+    if (e.target.closest?.('button, a') && !(dom.deckTrack.contains(e.target) && ['ArrowLeft', 'ArrowRight'].includes(e.key))) return
+    if (!machine.transiting && machine.depth === DECK && !view.all && deck.handleKey(e.key)) e.preventDefault()
   })
 
   dom.pastToggle.addEventListener('click', () => {
@@ -317,9 +329,10 @@ function boot(data) {
       pastEl: dom.pastList,
       pastWrap: dom.pastWrap,
       curators: data.curators,
-      thisMonth: new Date().toISOString().slice(0, 7),
+      thisMonth: new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit' }).format(new Date()),
       countVisited: (c) => visited.count(c.places.map((r) => r.id)),
       onPick: (c) => {
+        if (machine.transiting) return
         setCuratorView(c)
         if (!machine.request(DECK, { curator: c })) return
         history.pushState({ depth: DECK }, '', urlFor(DECK, { curator: c }))
@@ -330,6 +343,7 @@ function boot(data) {
   dom.allEntryLabel.textContent = `${data.places.length}곳 한눈에 보기 →`
   dom.allLead.textContent = `모두가 고른 ${data.places.length}곳`
   dom.allEntry.addEventListener('click', () => {
+    if (machine.transiting) return
     setAllView()
     if (!machine.request(DECK, { all: true })) return
     history.pushState({ depth: DECK }, '', urlFor(DECK, { all: true }))
@@ -339,11 +353,20 @@ function boot(data) {
   dom.allMap.addEventListener('click', () => {
     const ctx = { ...view, place: null }
     if (!machine.request(MAP, ctx)) return
-    history.pushState({ depth: MAP }, '', urlFor(MAP, ctx))
+    history.pushState({ depth: MAP, mapAll: !ctx.place }, '', urlFor(MAP, ctx))
   })
 
   refreshCount()
-  paint(CURATORS)
+  const initial = resolveRoute(location.hash, data)
+  // 직접 접속에도 앱 안의 뒤로가기를 제공하되, 새로고침에서는 중복해서 쌓지 않는다.
+  if (!Number.isInteger(history.state?.depth)) {
+    history.replaceState({ depth: CURATORS }, '', urlFor(CURATORS))
+    if (initial.depth >= DECK) history.pushState({ depth: DECK }, '', urlFor(DECK, initial.ctx))
+    if (initial.depth === MAP) history.pushState({ depth: MAP, mapAll: !initial.ctx.place }, '', urlFor(MAP, initial.ctx))
+  } else {
+    history.replaceState({ ...history.state, depth: initial.depth }, '', urlFor(initial.depth, initial.ctx))
+  }
+  restoreRoute(initial)
   dom.boot.hidden = true
 
   if (data.warnings.length) {
@@ -364,5 +387,5 @@ async function start() {
   }
 }
 
-dom.retry.addEventListener('click', start)
+dom.retry.addEventListener('click', () => location.reload())
 start()

@@ -12,8 +12,11 @@ function readRaw(storage) {
   }
 }
 
-export function createVisited(storage = globalThis.localStorage) {
-  const safe = storage ?? null
+export function createVisited(storage) {
+  let safe = storage ?? null
+  if (storage === undefined) {
+    try { safe = globalThis.localStorage } catch { safe = null }
+  }
   let ids = safe ? new Set(readRaw(safe)) : new Set()
 
   const persist = () => {

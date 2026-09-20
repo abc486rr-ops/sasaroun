@@ -54,7 +54,10 @@ function cardEl(place, i, total, { visited, onOpen, onToggle, today }) {
     sync()
     onToggle(place)
   })
-  foot.append(chk, el('span', 'pc__open', '지도에서 보기 →'))
+  const open = el('button', 'pc__open', '지도에서 보기 →')
+  open.type = 'button'
+  open.addEventListener('click', (e) => { e.stopPropagation(); onOpen(place) })
+  foot.append(chk, open)
 
   art.append(head, body, foot)
   art.addEventListener('click', () => onOpen(place))
@@ -68,6 +71,8 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
   let startX = 0
   let dx = 0
   let width = 1
+  let pointerId = null
+  let suppressClick = false
 
   const track = el('div', 'deck__track')
   trackHost.replaceChildren(track)
@@ -81,6 +86,7 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
     if (w) width = w
     track.style.transition = animate ? 'transform var(--dur) var(--ease)' : 'none'
     track.style.transform = `translate3d(${-index * width + dx}px,0,0)`
+    ;[...track.children].forEach((card, i) => { card.inert = i !== index })
     ;[...dotsHost.children].forEach((d, i) =>
       d.classList.toggle('dots__i--on', i === index)
     )
@@ -94,27 +100,35 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
 
   function onDown(e) {
     if (e.button != null && e.button !== 0) return
+    if (dragging) return
+    pointerId = e.pointerId
+    suppressClick = false
     dragging = true
     startX = e.clientX
     dx = 0
     width = trackHost.clientWidth || 1
-    track.setPointerCapture?.(e.pointerId)
+    // 탭은 원래 버튼으로 전달하고, 실제 드래그가 시작될 때만 캡처한다.
   }
 
   function onMove(e) {
-    if (!dragging) return
+    if (!dragging || e.pointerId !== pointerId) return
     const raw = e.clientX - startX
+    if (Math.abs(raw) > TAP_SLOP) {
+      suppressClick = true
+      trackHost.setPointerCapture?.(e.pointerId)
+    }
     // 양 끝에서는 저항을 준다 — 순환하지 않으므로 끝이라는 걸 손끝으로 알려야 한다
     const atEdge = (raw > 0 && index === 0) || (raw < 0 && index === places.length - 1)
     dx = atEdge ? raw * EDGE_DAMP : raw
     paint(false)
   }
 
-  function onUp() {
-    if (!dragging) return
+  function onUp(e) {
+    if (!dragging || e.pointerId !== pointerId) return
     dragging = false
+    pointerId = null
     const moved = Math.abs(dx)
-    if (moved > width * THRESHOLD) goTo(index + (dx < 0 ? 1 : -1))
+    if (e.type !== 'pointercancel' && moved > width * THRESHOLD) goTo(index + (dx < 0 ? 1 : -1))
     else goTo(index)
   }
 
@@ -124,7 +138,11 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
   trackHost.addEventListener('pointercancel', onUp)
   // 드래그 끝의 클릭이 카드 열기로 이어지지 않게 한다
   trackHost.addEventListener('click', (e) => {
-    if (Math.abs(dx) > TAP_SLOP) e.stopPropagation()
+    if (suppressClick && e.detail !== 0) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    suppressClick = false
   }, true)
 
   addEventListener('resize', () => {
@@ -141,8 +159,10 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
     },
     goTo,
     handleKey(key) {
-      if (key === 'ArrowRight') goTo(index + 1)
-      else if (key === 'ArrowLeft') goTo(index - 1)
+      if (key === 'ArrowRight' || key === 'ArrowLeft') {
+        goTo(index + (key === 'ArrowRight' ? 1 : -1))
+        this.focusCurrent()
+      }
       else if (key === 'Enter' && places[index]) onOpen(places[index])
       else return false
       return true
@@ -157,6 +177,9 @@ export function createDeck({ trackHost, dotsHost, visited, onOpen, onToggle, tod
       dotsHost.replaceChildren(...list.map(() => el('li', 'dots__i')))
       width = trackHost.clientWidth || 1
       goTo(0, false)
+    },
+    focusCurrent() {
+      track.children[index]?.querySelector('.pc__open')?.focus({ preventScroll: true })
     },
     refresh() {
       const keep = index

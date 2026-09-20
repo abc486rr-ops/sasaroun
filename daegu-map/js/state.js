@@ -104,6 +104,20 @@ export function createMachine({
       return true
     },
 
+    /** URL 복원은 현재 전환을 취소하고 그 주소의 화면을 즉시 확정한다. */
+    restore(to, nextCtx) {
+      if (!isDepth(to)) return false
+      const from = target ?? depth
+      clearTimer()
+      depth = to
+      desired = to
+      ctx = nextCtx ?? null
+      target = null
+      pendingCtx = null
+      onTransition?.(from, to, ctx)
+      return true
+    },
+
     /** 화면 전환이 실제로 끝났음을 알린다. */
     settle() {
       arrive(false)

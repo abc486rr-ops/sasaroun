@@ -1,0 +1,10 @@
+{
+  "name": "sasaroun-daegu-map",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:e2e": "node --test e2e/*.test.mjs"
+  },
+  "devDependencies": { "playwright": "1.63.0" }
+}

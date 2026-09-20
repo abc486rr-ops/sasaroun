@@ -12,6 +12,7 @@ export function split(curators, thisMonth) {
     (acc, c) => {
       if (isTeam(c)) return { ...acc, team: [...acc.team, c] }
       if (c.month === thisMonth) return { ...acc, now: [...acc.now, c] }
+      if (c.month > thisMonth) return acc
       return { ...acc, past: [...acc.past, c] }
     },
     { team: [], now: [], past: [] }
@@ -29,6 +30,7 @@ function card(c, { visitedCount, onPick }) {
   const li = el('li')
   const btn = el('button', 'cur')
   btn.type = 'button'
+  btn.dataset.curatorId = c.id
 
   const art = el('div', 'cur__art')
   if (c.art) {

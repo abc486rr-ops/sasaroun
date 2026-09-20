@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="css/map.css">
 </head>
 <body data-depth="boot">
+<h1 class="sr-only">사사로운이 추천하는 대구</h1>
 
 <div class="shell">
 
@@ -48,7 +49,7 @@
       </p>
       <ul id="curator-list" class="curators"></ul>
       <section id="past-wrap" class="past" hidden>
-        <button id="past-toggle" class="past__toggle" type="button" aria-expanded="false">
+        <button id="past-toggle" class="past__toggle" type="button" aria-expanded="false" aria-controls="past-list">
           지난 달의 손님들
         </button>
         <ul id="past-list" class="curators" hidden></ul>
@@ -82,14 +83,14 @@
 <!-- 지도는 3D 변환 컨텍스트 바깥에 둔다.
      transform 걸린 부모 안에서 Leaflet 은 타일 좌표와 터치가 어긋난다. -->
 <div id="map-layer" class="map-layer" hidden>
-  <div id="map" class="map"></div>
-  <div id="map-fallback" class="map-fallback" hidden></div>
-  <div id="place-card" class="pcard"></div>
+  <div id="map" class="map" tabindex="-1" aria-label="추천 장소 지도"></div>
+  <div id="map-fallback" class="map-fallback" role="status" hidden></div>
+  <div id="place-card" class="pcard" inert></div>
 </div>
 
 <div id="boot" class="boot">
   <img class="art boot__art" src="img/art/art-058-592x144.png" alt="" width="240" height="58">
-  <p class="boot__msg">불러오는 중</p>
+  <p class="boot__msg" role="status">불러오는 중</p>
 </div>
 
 <div id="fatal" class="boot" hidden>
@@ -99,6 +100,16 @@
 </div>
 
 <script src="vendor/leaflet.js"></script>
-<script type="module" src="js/main.js"></script>
+<noscript><style>#boot { display: none; }</style><p>장소 지도를 이용하려면 브라우저에서 JavaScript를 켜주세요.</p></noscript>
+<script type="module">
+// main.js의 정적 import 실패는 앱 내부에서 잡을 수 없으므로 별도로 처리한다.
+import('./js/main.js').catch((error) => {
+  document.getElementById('boot').hidden = true
+  document.getElementById('fatal').hidden = false
+  document.getElementById('fatal-msg').textContent = '앱을 불러오지 못했습니다. 연결을 확인하고 다시 시도해주세요.'
+  document.getElementById('fatal-retry').onclick = () => location.reload()
+  console.error('[daegu-map] module load', error)
+})
+</script>
 </body>
 </html>
