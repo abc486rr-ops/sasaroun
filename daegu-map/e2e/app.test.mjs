@@ -131,7 +131,8 @@ test('전체 지도에서 장소 카드를 닫으면 지도에 머문다', async
   await p.getByRole('button', { name: '카드 닫기' }).click()
   assert.equal(await p.locator('body').getAttribute('data-depth'), '2')
   assert.equal(await p.locator('#place-card').getAttribute('inert'), '')
-  assert.match(p.url(), /#\/all\/map$/)
+  // 들어올 때는 옛 ID 주소로 들어왔지만, 다시 내보내는 주소는 이름으로 바뀐다
+  assert.equal(decodeURIComponent(new URL(p.url()).hash), '#/전체/지도')
   await p.locator('.leaflet-marker-icon').first().press('Space')
   await p.locator('.pcard--on').waitFor()
   assert.equal(await p.locator('.pcard__close').evaluate(el => document.activeElement === el), true)

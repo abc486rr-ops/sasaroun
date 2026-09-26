@@ -6,16 +6,20 @@ const ART_DIR = 'img/art/'
 export const isTeam = (c) => c.kind === 'team'
 export const monthOf = (date) => `${date.slice(0, 7)}`
 
-/** 이번 달 손님 / 지난 손님을 갈라낸다. 팀은 항상 상시 노출. */
+/** 이번 달 손님 / 지난 손님을 갈라낸다. 팀은 항상 상시 노출.
+ *
+ * 아직 오지 않은 달의 손님은 어느 쪽도 아니다 — 지난 손님으로 내걸면 거짓이고,
+ * 이번 달로 올리면 예고편이 된다. 화면에서는 빼되 `future` 로 돌려준다.
+ * 그냥 버리면 데이터를 미리 넣어둔 사람이 왜 안 보이는지 알 길이 없다. */
 export function split(curators, thisMonth) {
   return curators.reduce(
     (acc, c) => {
       if (isTeam(c)) return { ...acc, team: [...acc.team, c] }
       if (c.month === thisMonth) return { ...acc, now: [...acc.now, c] }
-      if (c.month > thisMonth) return acc
+      if (c.month > thisMonth) return { ...acc, future: [...acc.future, c] }
       return { ...acc, past: [...acc.past, c] }
     },
-    { team: [], now: [], past: [] }
+    { team: [], now: [], past: [], future: [] }
   )
 }
 
@@ -80,7 +84,7 @@ function group(title) {
  * @param {(c) => number} opts.countVisited
  */
 export function render({ listEl, pastEl, pastWrap, curators, thisMonth, countVisited, onPick }) {
-  const { team, now, past } = split(curators, thisMonth)
+  const { team, now, past, future } = split(curators, thisMonth)
   listEl.replaceChildren()
 
   team.forEach((c) => listEl.append(card(c, { visitedCount: countVisited(c), onPick })))
@@ -93,4 +97,6 @@ export function render({ listEl, pastEl, pastWrap, curators, thisMonth, countVis
   pastEl.replaceChildren()
   past.forEach((c) => pastEl.append(card(c, { visitedCount: countVisited(c), onPick })))
   pastWrap.hidden = past.length === 0
+
+  return { future }
 }

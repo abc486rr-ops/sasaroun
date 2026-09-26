@@ -27,9 +27,14 @@
   background: var(--paper);
 }
 
-/* 타일을 종이 톤으로 눌러 모눈 배경과 붙여둔다 */
+/* 타일을 종이 톤으로 눌러 모눈 배경과 붙여둔다.
+ *
+ * OSM 표준 타일은 노란 도로·분홍 건물·초록 공원에 업종 아이콘까지 얹힌 컬러 지도다.
+ * 그대로 두면 우리 잉크 핀이 그 색들에 묻힌다. 채도를 걷어내면 손그림 핀이 다시
+ * 화면에서 가장 진한 것이 된다. (원래 쓰던 CARTO Positron 이 API 키를 요구하게 되어
+ * 표준 타일로 옮겼고, 잃은 밝은 톤을 여기서 되찾는다.) */
 .leaflet-tile-pane {
-  filter: saturate(0.72) contrast(0.94);
+  filter: saturate(0.15) contrast(0.88) brightness(1.06);
 }
 
 .leaflet-container {
@@ -41,6 +46,13 @@
   background: rgba(254, 254, 254, 0.82);
   font-size: 10px;
   color: var(--sub);
+}
+
+/* 출처 링크는 Leaflet 기본 파랑으로 뜬다. 이 지도에 없는 색이라 먹색으로 눌러둔다 —
+ * 표기는 지워선 안 되지만 눈에 먼저 들어올 이유도 없다. */
+.leaflet-control-attribution a {
+  color: var(--sub);
+  text-decoration: underline;
 }
 
 /* 기본 마커 이미지 대신 잉크 점 + 이름표 */

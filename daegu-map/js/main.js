@@ -331,8 +331,12 @@ function boot(data) {
     dom.pastList.hidden = open
   })
 
+  /* 미래 달 손님 경고는 한 번만. renderCurators 는 체크할 때마다 다시 도는데
+   * 그때마다 같은 말을 찍으면 콘솔이 쓸모없어진다. */
+  let futureWarned = false
+
   function renderCurators() {
-    curatorView.render({
+    const { future } = curatorView.render({
       listEl: dom.list,
       pastEl: dom.pastList,
       pastWrap: dom.pastWrap,
@@ -346,6 +350,14 @@ function boot(data) {
         history.pushState({ depth: DECK }, '', urlFor(DECK, { curator: c }))
       }
     })
+
+    if (future.length && !futureWarned) {
+      futureWarned = true
+      console.warn(
+        `[daegu-map] 아직 오지 않은 달의 손님 ${future.length}명은 목록에 넣지 않습니다:`,
+        future.map((c) => `${c.name}(${c.month})`).join(', ')
+      )
+    }
   }
 
   dom.allEntryLabel.textContent = `${data.places.length}곳 한눈에 보기 →`

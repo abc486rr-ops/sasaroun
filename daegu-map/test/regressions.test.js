@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { validate } from '../js/data.js'
 import { createVisited } from '../js/visited.js'
+import { split } from '../js/curators.js'
 
 const p = { id: 'one', name: '장소', lat: null, lng: null }
 test('잘못된 traits와 중복 추천을 경계에서 정리한다', () => {
@@ -21,6 +22,25 @@ test('localStorage 속성 접근이 거부되어도 메모리로 동작한다', 
     if (original) Object.defineProperty(globalThis, 'localStorage', original)
     else delete globalThis.localStorage
   }
+})
+
+/* 아직 오지 않은 달의 손님은 첫 화면에 내걸지 않는다. 다만 데이터에 넣어둔 사람이
+ * 왜 안 보이는지는 알 수 있어야 해서, 사라지는 대신 따로 모아 돌려준다. */
+test('미래 달의 손님은 목록에서 빼되 따로 모은다', () => {
+  const 손님 = (id, month) => ({ id, name: id, kind: 'special', month, places: [] })
+  const { team, now, past, future } = split(
+    [
+      { id: 't', name: '팀', kind: 'team', places: [] },
+      손님('이번달', '2026-09'),
+      손님('다음달', '2026-10'),
+      손님('지난달', '2026-08')
+    ],
+    '2026-09'
+  )
+  assert.deepEqual(team.map((c) => c.id), ['t'])
+  assert.deepEqual(now.map((c) => c.id), ['이번달'])
+  assert.deepEqual(past.map((c) => c.id), ['지난달'])
+  assert.deepEqual(future.map((c) => c.id), ['다음달'])
 })
 
 test('URL 복원은 진행 중 전환과 타임아웃을 취소한다', async () => {
